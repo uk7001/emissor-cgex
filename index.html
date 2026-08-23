@@ -6,7 +6,7 @@
 <title>Emissor de Documentos da Corregedoria</title>
 <style>
 :root{--bg:#080808;--panel:#151515;--panel2:#222222;--line:#000000;--text:#f4f4f4;--muted:#9a9a9a;--accent:#000000;--accent2:#1a1a1a;--ok:#38d39f;--danger:#ff5f6d}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,#1c1c1c 0,transparent 38%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 0%,#1c1c1c 0,transparent 38%) 0 0 / 100% 100% no-repeat,var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
 .wrap{max-width:1250px;margin:auto;padding:28px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.brand{display:flex;gap:14px;align-items:center}.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#000,#151515);display:grid;place-items:center;font-weight:900;box-shadow:0 10px 30px #00000066}.brand h1{font-size:21px;margin:0}.logo img{width:100%;height:100%;display:block;object-fit:cover;border-radius:inherit}.brand p{margin:3px 0;color:var(--muted);font-size:13px}.clock{font-size:12px;color:var(--muted);background:var(--panel);border:1px solid #000;padding:10px 13px;border-radius:10px}
 .tabs{display:flex;gap:8px;margin-bottom:16px}.tab{border:2px solid #000;background:#151515;color:#b0b0b0;padding:5px 12px;min-height:38px;display:flex;align-items:center;justify-content:center;line-height:1.15;border-radius:10px;cursor:pointer;font-weight:700;box-sizing:border-box}.tab.active{background:#000;color:white;border-color:#000;opacity:1}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:rgba(21,21,21,.96);border:1px solid #000;border-radius:16px;padding:20px;box-shadow:0 18px 50px #0008}.card h2{margin:0 0 5px;font-size:16px}.sub{color:var(--muted);font-size:12px;margin-bottom:18px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field.full{grid-column:1/-1}.field label{display:block;color:#d0d0d0;font-size:12px;font-weight:700;margin:0 0 7px}.field input,.field textarea,.field select{width:100%;border:1px solid #000;background:#222;color:var(--text);border-radius:9px;padding:11px 12px;outline:none;font:inherit;box-shadow:inset 0 0 0 1px #000}.field input:focus,.field textarea:focus{border-color:#000;box-shadow:inset 0 0 0 1px #000,0 0 0 1px #000}textarea{resize:none;height:42px;min-height:42px;overflow:hidden}.preview{display:block!important;visibility:visible!important;opacity:1;width:100%;resize:none;background:#0b0b0b;border:1px solid #000;border-radius:12px;padding:17px;min-height:0;height:auto;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;color:#e9e9e9;overflow:hidden;margin-bottom:0}.actions{display:flex;gap:9px;margin-top:12px}.btn{border:1px solid #000;border-radius:9px;padding:11px 15px;font-weight:800;cursor:pointer}.primary{background:#000;color:white;border-color:#000}.secondary{background:#2a2a2a;color:#e9e9e9;border-color:#000}.danger{background:#242424;color:#ff9ca5;border-color:#000}.hint{font-size:11px;color:var(--muted);margin-top:9px}.toast{position:fixed;right:20px;bottom:20px;background:#16251f;border:1px solid #275f4c;color:#9af0ce;padding:12px 15px;border-radius:10px;opacity:0;transform:translateY(10px);transition:.2s}.toast.show{opacity:1;transform:none}
@@ -92,27 +92,6 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
   }
 }
 
-}
-
-/* SOMENTE DESKTOP: o cartão termina após a mensagem de data/hora */
-@media (min-width:851px){
-  .grid{align-items:start!important;}
-  .grid > .card:nth-child(2){
-    align-self:start!important;
-    height:max-content!important;
-  }
-}
-
-/* SOMENTE DESKTOP: o cartão termina logo após a mensagem de data/hora */
-@media (min-width:851px){
-  .grid{
-    align-items:start!important;
-  }
-  .grid > .card:nth-child(2){
-    height:max-content!important;
-    min-height:0!important;
-    align-self:start!important;
-  }
 }
 
 .brand-title-row{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
@@ -257,36 +236,11 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
   padding:2px 0;
 }
 
-/* === MODELO DESKTOP — ALINHAMENTO DA REFERÊNCIA === */
-@media (min-width: 851px){
-  .grid{
-    display:grid !important;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
-    align-items:stretch !important;
-    column-gap:18px !important;
-    row-gap:0 !important;
-  }
+</style>
 
-  .grid > .card{
-    box-sizing:border-box !important;
-    align-self:stretch !important;
-    margin:0 !important;
-  }
-
-  /* Os dois cartões terminam exatamente na mesma linha. */
-  .grid > .card:nth-child(1),
-  .grid > .card:nth-child(2){
-    min-height:0 !important;
-  }
-
-  /* Critérios fica imediatamente depois dos dois cartões. */
-  .penalty-section{
-    margin-top:8px !important;
-  }
-}
-
-
-/* === CORREÇÃO EXATA DO DESKTOP — MOBILE INALTERADO === */
+<style id="desktop-layout-fix">
+/* DESKTOP SOMENTE — mantém o layout natural dos dois cartões.
+   Nenhuma regra abaixo afeta telas de até 850px. */
 @media (min-width: 851px){
   .grid{
     display:grid !important;
@@ -294,26 +248,21 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
     gap:18px !important;
     align-items:start !important;
   }
-
   .grid > .card{
+    height:auto !important;
+    min-height:0 !important;
+    align-self:start !important;
     box-sizing:border-box !important;
     margin:0 !important;
   }
-
-  /* Mantém o cartão de pré-visualização com exatamente a mesma altura
-     do cartão de preenchimento. A altura é sincronizada pelo script abaixo. */
   .grid > .card:nth-child(2){
-    align-self:start !important;
-    height:var(--desktop-card-height) !important;
+    height:auto !important;
     min-height:0 !important;
   }
-
-  /* Critérios fica logo abaixo da linha final dos cartões. */
   .penalty-section{
-    margin-top:8px !important;
+    margin-top:18px !important;
   }
 }
-
 </style>
 
 <style id="revogacao-neutral">
@@ -357,7 +306,7 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
   <h2>Preenchimento</h2><div class="sub">Digite os dados e o documento será atualizado automaticamente.</div>
   <div class="fields" id="fields">
     <div class="field"><label>Responsável:</label><input id="responsavel" value="@"></div>
-    <div class="field"><label>Função:</label><input id="funcao" placeholder="Corregedor."></div>
+    <div class="field"><label>Função:</label><input id="funcao" placeholder="Corregedoria."></div>
     <div class="field" id="individuoWrap"><label>Indivíduo(s):</label><input id="individuo" placeholder="N/A."></div>
     <div class="field" id="solicitanteWrap" style="display:none"><label>Solicitante:</label><input id="solicitante" value="@"></div>
     <div class="field"><label>Nick do Roblox:</label><input id="nick" placeholder=""></div>
@@ -383,7 +332,7 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
     <div class="field full newmodel-field" id="nickRevogarWrap" style="display:none"><label>Nick do indivíduo a ser revogado:</label><input id="nickRevogar"></div>
     <div class="field full newmodel-field" id="patentePerdidaWrap" style="display:none"><label>Patente perdida:</label><input id="patentePerdida"></div>
     <div class="field full newmodel-field" id="motivoRevogacaoWrap" style="display:none"><label>Motivo:</label><textarea id="motivoRevogacao"></textarea></div>
-    <div class="field full newmodel-field" id="comprovRevogacaoWrap" style="display:none"><label>Comprovações:</label><textarea id="comprovRevogacao" placeholder="Descreva a justificativa..."></textarea></div>
+    <div class="field full newmodel-field" id="comprovRevogacaoWrap" style="display:none"><label>Comprovações:</label><textarea id="comprovRevogacao" placeholder=""></textarea></div>
   </div>
   
 </section>
@@ -499,12 +448,12 @@ function resizePreview(){
   area.style.height=area.scrollHeight+"px";
 }
 function build(){
-  const r=val("responsavel")||"@", f=val("funcao")||"Corregedor.",
+  const r=val("responsavel")||"@", f=val("funcao")||"Corregedoria.",
   i=val("individuo")||"N/A.", n=val("nick"), id=val("id")||"N/A.", m=val("motivo"),
   o=val("obs")||"N/A.", p=$("provas")?val("provas"):"", d=now();
   let text;
   if(model==="advertencia"){
-    text=`**《 ADVERTÊNCIA 》**
+    text=`**《 ADVERTÊNCIA 》
 • | Responsável: ${r}
 • | Função: ${f}
 ♤ ————————————— ♤
@@ -516,14 +465,14 @@ function build(){
 • | Observações: ${o}
 ♤ ——————————————— ♤
 • | Data/Hora: ${d}
-• | Comprovações: ${p}`;
+• | Comprovações: ${p} **`;
   }else if(model==="rebaixamento"){
-    text=`**《 REBAIXAMENTO 》**
+    text=`**《 REBAIXAMENTO 》
 ♤ ——————————————— ♤
 • | Responsável: ${r}
 • | Função: ${f}
 ♤ ——————————————— ♤
-• | Indivíduo(s): ${i} 
+• | Indivíduo(s): ${i}
 • | Nick do Roblox: ${n}
 • | ID: ${id}
 
@@ -534,7 +483,7 @@ function build(){
 • | Observações: ${o}
  ♤—————————————— ♤
 • | Data/Hora: ${d}
-• | Comprovações: ${p}`;
+• | Comprovações: ${p} **`;
   }else if(model==="exilio"){
     text=`**## :CGEx: SOLICITAÇÃO DE EXÍLIO :CGEx: 
 ———————————————
@@ -673,69 +622,10 @@ setInterval(()=>{$("clock").textContent=now()},1000);updateComprovacoesField();b
 window.addEventListener("resize",resizePreview);
 </script>
 
-<script>
-(function(){
-  function alignDesktopCards(){
-    if (window.innerWidth < 851) return;
-    const grid = document.querySelector('.grid');
-    if (!grid) return;
-    const cards = grid.querySelectorAll(':scope > .card');
-    if (cards.length < 2) return;
-
-    cards.forEach(c => c.style.height = 'auto');
-    const h = Math.max(cards[0].getBoundingClientRect().height,
-                       cards[1].getBoundingClientRect().height);
-    cards.forEach(c => c.style.height = h + 'px');
-  }
-
-  window.addEventListener('load', alignDesktopCards);
-  window.addEventListener('resize', alignDesktopCards);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(alignDesktopCards);
-  }
-  setTimeout(alignDesktopCards, 80);
-})();
-</script>
 
 
-<script>
-/* Sincronização EXCLUSIVA do desktop.
-   Nenhuma regra/medida do mobile é alterada. */
-(function(){
-  function syncDesktopCards(){
-    if (window.innerWidth < 851) {
-      document.documentElement.style.removeProperty('--desktop-card-height');
-      return;
-    }
 
-    const grid = document.querySelector('.grid');
-    const fill = grid && grid.querySelector(':scope > .card:first-child');
-    const preview = grid && grid.querySelector(':scope > .card:nth-child(2)');
-    if (!grid || !fill || !preview) return;
 
-    /* Mede o preenchimento em altura natural e aplica a mesma altura
-       à pré-visualização, deixando os dois finais exatamente alinhados. */
-    const natural = fill.getBoundingClientRect().height;
-    document.documentElement.style.setProperty('--desktop-card-height', natural + 'px');
-
-    const penalty = document.querySelector('.penalty-section');
-    if (penalty) penalty.style.marginTop = '8px';
-  }
-
-  window.addEventListener('load', syncDesktopCards);
-  window.addEventListener('resize', syncDesktopCards);
-
-  if (window.ResizeObserver) {
-    window.addEventListener('load', function(){
-      const fill = document.querySelector('.grid > .card:first-child');
-      if (!fill) return;
-      new ResizeObserver(function(){
-        if (window.innerWidth >= 851) syncDesktopCards();
-      }).observe(fill);
-    });
-  }
-})();
-</script>
 
 </body>
 </html>
