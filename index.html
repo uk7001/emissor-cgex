@@ -9,7 +9,7 @@
 *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 0%,#1c1c1c 0,transparent 38%) 0 0 / 100% 100% no-repeat,var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
 .wrap{max-width:1250px;margin:auto;padding:28px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.brand{display:flex;gap:14px;align-items:center}.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#000,#151515);display:grid;place-items:center;font-weight:900;box-shadow:0 10px 30px #00000066}.brand h1{font-size:21px;margin:0}.logo img{width:100%;height:100%;display:block;object-fit:cover;border-radius:inherit}.brand p{margin:3px 0;color:var(--muted);font-size:13px}.clock{font-size:12px;color:var(--muted);background:var(--panel);border:1px solid #000;padding:10px 13px;border-radius:10px}
 .tabs{display:flex;gap:8px;margin-bottom:16px}.tab{border:2px solid #000;background:#151515;color:#b0b0b0;padding:5px 12px;min-height:38px;display:flex;align-items:center;justify-content:center;line-height:1.15;border-radius:10px;cursor:pointer;font-weight:700;box-sizing:border-box}.tab.active{background:#000;color:white;border-color:#000;opacity:1}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:rgba(21,21,21,.96);border:1px solid #000;border-radius:16px;padding:20px;box-shadow:0 18px 50px #0008}.card h2{margin:0 0 5px;font-size:16px}.sub{color:var(--muted);font-size:12px;margin-bottom:18px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field.full{grid-column:1/-1}.field label{display:block;color:#d0d0d0;font-size:12px;font-weight:700;margin:0 0 7px}.field input,.field textarea,.field select{width:100%;border:1px solid #000;background:#222;color:var(--text);border-radius:9px;padding:11px 12px;outline:none;font:inherit;box-shadow:inset 0 0 0 1px #000}.field input:focus,.field textarea:focus{border-color:#000;box-shadow:inset 0 0 0 1px #000,0 0 0 1px #000}textarea{resize:none;height:42px;min-height:42px;overflow:hidden}.preview{display:block!important;visibility:visible!important;opacity:1;width:100%;resize:none;background:#0b0b0b;border:1px solid #000;border-radius:12px;padding:17px;min-height:0;height:auto;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;color:#e9e9e9;overflow:hidden;margin-bottom:0}.actions{display:flex;gap:9px;margin-top:12px}.btn{border:1px solid #000;border-radius:9px;padding:11px 15px;font-weight:800;cursor:pointer}.primary{background:#000;color:white;border-color:#000}.secondary{background:#2a2a2a;color:#e9e9e9;border-color:#000}.danger{background:#242424;color:#ff9ca5;border-color:#000}.hint{font-size:11px;color:var(--muted);margin-top:9px}.toast{position:fixed;right:20px;bottom:20px;background:#16251f;border:1px solid #275f4c;color:#9af0ce;padding:12px 15px;border-radius:10px;opacity:0;transform:translateY(10px);transition:.2s}.toast.show{opacity:1;transform:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:rgba(21,21,21,.96);border:1px solid #000;border-radius:16px;padding:20px;box-shadow:0 18px 50px #0008}.card h2{margin:0 0 5px;font-size:16px}.sub{color:var(--muted);font-size:12px;margin-bottom:18px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field.full{grid-column:1/-1}.field label{display:block;color:#d0d0d0;font-size:12px;font-weight:700;margin:0 0 7px}.field input,.field textarea,.field select{width:100%;border:1px solid #000;background:#222;color:var(--text);border-radius:9px;padding:11px 12px;outline:none;font:inherit;font-size:13px;box-shadow:inset 0 0 0 1px #000}.field input:focus,.field textarea:focus{border-color:#000;box-shadow:inset 0 0 0 1px #000,0 0 0 1px #000}textarea{resize:none;height:42px;min-height:42px;overflow:hidden}.preview{display:block!important;visibility:visible!important;opacity:1;width:100%;resize:none;background:#0b0b0b;border:1px solid #000;border-radius:12px;padding:17px;min-height:0;height:auto;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;color:#e9e9e9;overflow:hidden;margin-bottom:0}.actions{display:flex;gap:9px;margin-top:12px}.btn{border:1px solid #000;border-radius:9px;padding:11px 15px;font-weight:800;cursor:pointer}.primary{background:#000;color:white;border-color:#000}.secondary{background:#2a2a2a;color:#e9e9e9;border-color:#000}.danger{background:#242424;color:#ff9ca5;border-color:#000}.hint{font-size:11px;color:var(--muted);margin-top:9px}.toast{position:fixed;right:20px;bottom:20px;background:#16251f;border:1px solid #275f4c;color:#9af0ce;padding:12px 15px;border-radius:10px;opacity:0;transform:translateY(10px);transition:.2s}.toast.show{opacity:1;transform:none}
 @media(max-width:850px){.grid{grid-template-columns:1fr}.wrap{padding:16px}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.top{align-items:flex-start}.clock{display:none}}
 
 .fields.exilio-mode #individuoWrap{display:none!important}
@@ -73,9 +73,9 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
   border-color:#205b91!important;
 }
 .preview + .actions .secondary{
-  background:#b33f4d!important;
+  background:#5c0f18!important;
   color:#ffffff!important;
-  border-color:#832d39!important;
+  border-color:#3d080f!important;
 }
 .preview + .actions .btn:active{
   transform:scale(.98);
@@ -224,16 +224,83 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
   font-size:10px;
   padding:6px 9px;
 }
-.penalty-subtab.revogacao-tab.active{
-  background:#245985;
-  color:#cfe8ff;
-  border-color:#3979ad;
-}
+
 .revogacao-text{
   color:#d8d8d8;
   font-size:13px;
   line-height:1.55;
   padding:2px 0;
+}
+
+
+#penaltySection .penalty-tabs{
+  display:flex;
+  flex-wrap:nowrap !important;
+  overflow-x:auto;
+  gap:6px;
+}
+#penaltySection .penalty-tabs .penalty-subtab{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+
+/* Seleção de caracteres: destaque escuro e semitransparente */
+::selection{
+  background:rgba(55,55,55,.72) !important;
+  color:#f4f4f4 !important;
+}
+::-moz-selection{
+  background:rgba(55,55,55,.72) !important;
+  color:#f4f4f4 !important;
+}
+
+/* Destaque escuro da área de pré-visualização durante a seleção */
+#preview.copying-preview{
+  /* Mesma espessura estrutural da borda usada ao limpar */
+  border:2px solid rgba(24,110,72,.78) !important;
+  outline:2px solid rgba(24,110,72,.78) !important;
+  outline-offset:0 !important;
+  box-shadow:0 0 0 2px rgba(24,110,72,.24) !important;
+  box-sizing:border-box !important;
+}
+#preview.copying-preview:focus{
+  border-width:2px !important;
+  outline-width:2px !important;
+  outline-offset:0 !important;
+}
+
+/* Destaque vermelho escuro da área de pré-visualização ao limpar */
+#preview.clearing-preview{
+  border:2px solid #000000 !important;
+  outline:2px solid #000000 !important;
+  outline-offset:0 !important;
+  box-shadow:0 0 0 2px rgba(0,0,0,.35) !important;
+}
+#preview.clearing-preview:focus{
+  outline:2px solid #000000 !important;
+}
+
+
+/* Contraste reforçado dos botões principais */
+#copy{
+  background:#082b59 !important;
+  color:#ffffff !important;
+  border-color:#123f73 !important;
+}
+#copy:hover{
+  background:#0a356d !important;
+  color:#ffffff !important;
+}
+#clear{
+  background:#3f0d16 !important;
+  color:#ffffff !important;
+  border-color:#5c1722 !important;
+}
+#clear:hover{
+  background:#4d111b !important;
+  color:#ffffff !important;
+  border-color:#681c28 !important;
 }
 
 </style>
@@ -265,26 +332,8 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
 }
 </style>
 
-<style id="revogacao-neutral">
-#penaltySection .penalty-subtab.revogacao-tab,
-#penaltySection .penalty-subtab.revogacao-tab.active{
-  background: inherit !important;
-  color: inherit !important;
-  border-color: inherit !important;
-}
-</style>
-<style id="revogacao-correcao-final">
-#penaltySection .penalty-subtab.revogacao-tab{
-  background:#191919 !important;
-  color:#aaa !important;
-  border:1px solid #292929 !important;
-}
-#penaltySection .penalty-subtab.revogacao-tab.active{
-  background:#2a2a2a !important;
-  color:#fff !important;
-  border:1px solid #444 !important;
-}
-</style></head>
+
+</head>
 <body>
 <div class="wrap">
 <header class="top">
@@ -311,21 +360,23 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
     <div class="field" id="solicitanteWrap" style="display:none"><label>Solicitante:</label><input id="solicitante" value="@"></div>
     <div class="field"><label>Nick do Roblox:</label><input id="nick" placeholder=""></div>
     <div class="field" id="idWrap"><label>ID do Discord:</label><input id="id" placeholder="N/A."></div>
-    <div class="field full"><label>Motivo(s):</label><textarea id="motivo" placeholder="Descreva o(s) motivo(s)..."></textarea></div>
+    <div class="field full"><label>Motivo(s):</label><textarea id="motivo" placeholder=""></textarea></div>
     <div class="field" id="antigaWrap" style="display:none"><label>Antiga Função:</label><input id="antiga" placeholder="Função anterior"></div>
     <div class="field" id="novaWrap" style="display:none"><label>Nova função:</label><input id="nova" placeholder="Nova função"></div>
     <div class="field full"><label>Observações:</label><textarea id="obs" placeholder="N/A."></textarea></div>
-    <div class="field full" id="provasWrap"><label>Comprovações:</label><textarea id="provas" placeholder="Descreva a justificativa..."></textarea></div>
+    <div class="field full" id="provasWrap"><label>Comprovações:</label><textarea id="provas" placeholder=""></textarea></div>
     <div class="field" id="nickDiscordWrap" style="display:none"><label>Nick Discord:</label><input id="nickDiscord" placeholder="N/A."></div>
     <div class="field" id="idDiscordWrap" style="display:none"><label>ID Discord:</label><input id="idDiscord" placeholder="N/A."></div>
     <div class="field full newmodel-field" id="atendenteWrap" style="display:none"><label>Atendente:</label><input id="atendente" value="@"></div>
     <div class="field full newmodel-field" id="solicitantePatenteWrap" style="display:none"><label>Solicitante:</label><input id="solicitantePatente" value="@"></div>
+    <div class="field full newmodel-field" id="solicitanteRevogacaoWrap" style="display:none"><label>Solicitante:</label><input id="solicitanteRevogacao" value="@"></div>
     <div class="field full newmodel-field" id="autorizacaoWrap" style="display:none"><label>Autorização:</label><input id="autorizacao" placeholder="N/A."></div>
     <div class="field full newmodel-field" id="nickIndividuoWrap" style="display:none"><label>Nick do indivíduo:</label><input id="nickIndividuo"></div>
     <div class="field full newmodel-field" id="patenteEntregarWrap" style="display:none"><label>Patente a entregar:</label><input id="patenteEntregar"></div>
     <div class="field full newmodel-field" id="tempoInatividadeWrap" style="display:none"><label>Tempo de inatividade:</label><input id="tempoInatividade" placeholder="N/A."></div>
-    <div class="field full newmodel-field" id="comprovJustWrap" style="display:none"><label>Comprovações/Justificativa:</label><textarea id="comprovJust" placeholder="Descreva a justificativa..."></textarea></div>
+    <div class="field full newmodel-field" id="comprovJustWrap" style="display:none"><label>Comprovações/Justificativa:</label><textarea id="comprovJust" placeholder=""></textarea></div>
     <div class="field full newmodel-field" id="responsavelTreinoWrap" style="display:none"><label>Responsável:</label><input id="responsavelTreino" value="@"></div>
+    <div class="field full newmodel-field" id="responsavelRevogacaoWrap" style="display:none"><label>Responsável:</label><input id="responsavelRevogacao" value="@"></div>
     <div class="field full newmodel-field" id="nickInstrutorWrap" style="display:none"><label>Nick do instrutor:</label><input id="nickInstrutor"></div>
     <div class="field full newmodel-field" id="nickMilitarWrap" style="display:none"><label>Nick do militar aprovado:</label><input id="nickMilitar"></div>
     <div class="field full newmodel-field" id="patenteEntregueWrap" style="display:none"><label>Patente entregue:</label><input id="patenteEntregue"></div>
@@ -340,7 +391,7 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
 <section class="card">
   <h2>Pré-visualização</h2><div class="sub"></div>
   <textarea class="preview" id="preview" readonly spellcheck="false"></textarea>
-  <div class="actions"><button class="btn primary" id="copy">Copiar documento</button><button class="btn secondary" id="clear">Limpar</button></div><div class="copy-notice" id="copyNotice" aria-live="polite">Clique no texto selecionado para copiar.</div><div class="hint date-hint">A data e a hora são inseridas automaticamente no momento da geração.</div>
+  <div class="actions"><button class="btn primary" id="copy">Copiar documento</button><button class="btn secondary" id="clear">Limpar</button></div><div class="hint date-hint">A data e a hora são inseridas automaticamente no momento da geração.</div>
 </section>
 </div>
 </div>
@@ -354,8 +405,9 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
     <div class="penalty-tabs">
       <button class="penalty-subtab active" type="button" data-penalty="advertencias">ADVERTÊNCIA</button>
       <button class="penalty-subtab" type="button" data-penalty="rebaixamento">REBAIXAMENTO</button>
+      <button class="penalty-subtab" type="button" data-penalty="comandos-proibidos">COMANDOS PROIBIDOS</button>
       <button class="penalty-subtab" type="button" data-penalty="exilio-banimento">EXÍLIO / BANIMENTO</button>
-      <button class="penalty-subtab revogacao-tab" type="button" data-penalty="revogacao-criterio">REVOGAÇÃO</button>
+      <button class="penalty-subtab" type="button" data-penalty="revogacao-criterio">REVOGAÇÕES</button>
     </div>
 
     <div class="penalty-content active" id="penalty-advertencias">
@@ -363,16 +415,16 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
         <li>Má conduta.</li>
         <li>Abuso de poder.</li>
         <li>Abate de civis sem justificativa.</li>
-        <li>Prisão de forma abusiva (segurar a pessoa na algema por minutos sem justificativa plausível.).</li>
+        <li>Prisão de forma abusiva (segurar a pessoa na algema por minutos sem justificativa plausível).</li>
         <li>Uso de fardamento incorreto.</li>
         <li>Música inapropriada dentro do quartel.</li>
         <li>Pedir free / treino.</li>
         <li>Falta de gramática.</li>
         <li>Abreviação de palavras / gírias.</li>
-        <li>Abuso de comando .sit (abuso de bugs que quebram o role play no EB.).</li>
+        <li>Abuso de comando .sit (abuso de bugs que quebram o role play no EB).</li>
         <li>Mencionar outro EB de forma sugestiva para angariar usuários.</li>
         <li>Uso de exploits para realizar JJs dentro do jogo.</li>
-        <li>Atrapalhar o trabalho da CGEx (quando o militar do EB atrapalha a ação de integrante da CGEx em sala enquanto ele estiver resolvendo chamado, mesmo após avisos.).</li>
+        <li>Atrapalhar o trabalho da CGEx (quando o militar do EB atrapalha a ação de integrante da CGEx em sala enquanto ele estiver resolvendo chamado, mesmo após avisos).</li>
         <li>Ausência fora de área AFK.</li>
       </ul>
     </div>
@@ -386,16 +438,42 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
         <li>Omissão ao entregar a patente do aprovado após 6 horas do treino (2) rebaixamentos.</li>
         <li>Free patente (3) rebaixamentos.</li>
         <li>Acúmulo de 3 advertências (1) rebaixamento.</li>
-        <li>Free rank em excesso (rebaixamento para recruta + exílio.).</li>
+        <li>Free rank em excesso (rebaixamento para recruta + exílio).</li>
         <li>Reincidência no uso de exploits para realizar JJs, mesmo após advertência (1) rebaixamento.</li>
         <li>Rebaixamento não autorizado pela CGEx (2) rebaixamentos e +1 rebaixamento para cada pessoa que ele rebaixou.</li>
       </ul>
     </div>
 
+    <div class="penalty-content" id="penalty-comandos-proibidos">
+      <ul class="penalty-list command-list">
+        <li class="command-item"><strong>"CHAR"</strong><p>Patentes autorizadas:</p><ul><li>Membros com Gamepass (Elite Club, Vice Club e Light Club);</li><li>Aspirantes+ (apenas se o char for de cunho militar);</li><li>Char's com conteúdo nsfw/gore e que não seguem as regras de nossa comunidade são estritamente proibidos.</li></ul><p>Char só é considerado comando proibido quando utilizado em outra pessoa, ou quando quebra de alguma maneira as regras de nossa comunidade.</p></li>
+        <li class="command-item"><strong>"CMDBAR2"</strong><p>Proibido.</p><p>Patentes autorizadas:</p><ul><li>Corregedor+ da SGEx;</li><li>Sub Criadores.</li></ul></li>
+        <li class="command-item"><strong>"TITLE"</strong><p>Expressamente proibido em servidores públicos.</p></li>
+        <li class="command-item"><strong>"CLONE"</strong><p>Expressamente proibido para todos em servidores públicos.</p></li>
+        <li class="command-item"><strong>"H, m, sm e derivados"</strong><p>Expressamente proibido para todos em servidores públicos.</p></li>
+        <li class="command-item"><strong>"COUNTDOWN"</strong><p>Expressamente proibido em servidores públicos.</p></li>
+        <li class="command-item"><strong>"HipHeight e derivados"</strong><p>Expressamente proibido em servidores públicos.</p></li>
+        <li class="command-item"><strong>"To"</strong><p>Expressamente proibido utilizar :to em pessoas que não autorizaram ou que você não conheça.</p></li>
+        <li class="command-item"><strong>"INVISIBLE"</strong><p>Proibido.</p><p>Patentes autorizadas:</p><ul><li>Coordenadores+ da CGEx (com fins administrativos);</li><li>Vice Presidentes;</li><li>Presidente;</li><li>Sócios;</li><li>Sub Criadores.</li></ul></li>
+        <li class="command-item"><strong>"Refresh (ref) e Respawn (res)"</strong><p>É proibido utilizar estes comandos pessoas desconhecidas. Utilize apenas em si mesmo e com moderação.</p></li>
+        <li class="command-item"><strong>"KICK"</strong><p>Proibido em servidores públicos.</p><p>Patentes autorizadas:</p><ul><li>Apenas membros da Corregedoria Geral do Exército (CGEx) com finalidades administrativas.</li></ul></li>
+        <li class="command-item"><strong>"Kill, explod, punish, ice e derivados"</strong><p>COMPLETAMENTE proibido para todos.</p></li>
+        <li class="command-item"><strong>"DISFARÇAR"</strong><p>TERMINANETEMENTE PROIBIDO PARA TODOS!</p></li>
+        <li class="command-item"><strong>"Bubblechat"</strong><p>Expressamente proibido para todos exceto Sub Criadores.</p></li>
+        <li class="command-item"><strong>"Forcefield, God e derivados"</strong><p>Proibido para todos exceto para Sócios e Sub Criadores+.</p></li>
+      </ul>
+    </div>
+
+    <div class="penalty-content" id="penalty-revogacao-criterio">
+      <div class="revogacao-text">
+        Aplicável apenas quando o militar for rebaixado sem a devida documentação, relatório formal ou ter promovido um militar por engano. É importante verificar previamente se a ação não foi realizada por terceiros responsáveis, como os usuários 'Delta', 'Jottzk', 'GengarMelhorPoke', 'el gandra', 'Patrono' ou 'CristianoQuaresma10'.
+      </div>
+    </div>
+
     <div class="penalty-content" id="penalty-exilio-banimento">
       <ul class="penalty-list">
         <li>Uso de scripts para obter vantagens ou prejudicar militares.</li>
-        <li>Abuso de bugs (bug exploit.).</li>
+        <li>Abuso de bugs (bug exploit).</li>
         <li>Divulgação de outro EB.</li>
         <li>Participar de outro EB com envolvimento no desenvolvimento dele.</li>
         <li>Participar de ambientes que conspiram contra o EB.</li>
@@ -406,12 +484,6 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
         <li>Conteúdo pornográfico / gore.</li>
         <li>Conteúdo discriminatório / discurso de ódio.</li>
       </ul>
-    </div>
-
-    <div class="penalty-content" id="penalty-revogacao-criterio">
-      <div class="revogacao-text">
-        Aplicável apenas quando o militar for rebaixado sem a devida documentação, relatório formal ou ter promovido um militar por engano. É importante verificar previamente se a ação não foi realizada por terceiros responsáveis, como os usuários 'Delta', 'Jottzk', 'GengarMelhorPoke', 'el gandra', 'Patrono' ou 'CristianoQuaresma10'.
-      </div>
     </div>    </div>
   </div>
 </section>
@@ -420,7 +492,15 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
 let model="advertencia";
 const $=id=>document.getElementById(id);
 const val=id=>$(id)?$(id).value.trim():"";
-function now(){return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date())}
+function now(){
+  const d=new Date();
+  const data=new Intl.DateTimeFormat('pt-BR',{dateStyle:'short'}).format(d);
+  const hora=new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-digit',hour12:false}).format(d);
+  const h=d.getHours();
+  const preposicao=(h===1)?"à":"às";
+  return `${data} ${preposicao} ${hora}`;
+}
+
 const penaltyToggle=$("penaltyToggle");
 const penaltySection=$("penaltySection");
 if(penaltyToggle&&penaltySection){
@@ -447,6 +527,93 @@ function resizePreview(){
   area.style.height="1px";
   area.style.height=area.scrollHeight+"px";
 }
+
+/* =========================================================
+   SALVAMENTO AUTOMÁTICO DOS CAMPOS
+   Os dados ficam somente no navegador (localStorage).
+   ========================================================= */
+const AUTO_SAVE_KEY = "atp_form_autosave_v1";
+
+function getAutosaveFields(){
+  return Array.from(document.querySelectorAll(
+    "input:not([type='button']):not([type='submit']):not([type='reset']):not([type='file']), textarea, select"
+  ));
+}
+
+function saveFormAutomatically(){
+  const data = {};
+  getAutosaveFields().forEach((field, index) => {
+    const key = field.id || field.name || `field_${index}`;
+    if(field.type === "checkbox" || field.type === "radio"){
+      data[key] = {
+        type: field.type,
+        checked: field.checked
+      };
+    }else{
+      data[key] = {
+        type: field.type || "text",
+        value: field.value
+      };
+    }
+  });
+
+  try{
+    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(data));
+  }catch(e){
+    console.warn("Não foi possível salvar os dados automaticamente.", e);
+  }
+}
+
+function restoreFormAutomatically(){
+  let data = null;
+
+  try{
+    data = JSON.parse(localStorage.getItem(AUTO_SAVE_KEY) || "null");
+  }catch(e){
+    data = null;
+  }
+
+  if(!data) return;
+
+  getAutosaveFields().forEach((field, index) => {
+    const key = field.id || field.name || `field_${index}`;
+    const saved = data[key];
+    if(!saved) return;
+
+    if(field.type === "checkbox" || field.type === "radio"){
+      field.checked = !!saved.checked;
+    }else if(saved.value !== undefined){
+      field.value = saved.value;
+    }
+  });
+
+  // Rebuild any generated preview/content using the restored values.
+  if(typeof build === "function"){
+    try{ build(); }catch(e){}
+  }
+}
+
+function clearAutosavedForm(){
+  try{
+    localStorage.removeItem(AUTO_SAVE_KEY);
+  }catch(e){}
+}
+
+function initAutosave(){
+  getAutosaveFields().forEach(field => {
+    field.addEventListener("input", saveFormAutomatically);
+    field.addEventListener("change", saveFormAutomatically);
+  });
+
+  restoreFormAutomatically();
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", initAutosave);
+}else{
+  initAutosave();
+}
+
 function build(){
   const r=val("responsavel")||"@", f=val("funcao")||"Corregedoria.",
   i=val("individuo")||"N/A.", n=val("nick"), id=val("id")||"N/A.", m=val("motivo"),
@@ -530,9 +697,9 @@ function build(){
   }else{
     text=`**<:CGEx:1477076538397819062>SOLICITAÇÃO DE REVOGAÇÃO <:CGEx:1477076538397819062>
 —————————————————————
-👤・Responsável: ${r}
+👤・Responsável: ${val("responsavelRevogacao")||"@"}
 
-<:membros:1465148207930675212> ・Solicitante: ${val("solicitantePatente")||"@"}
+<:membros:1465148207930675212> ・Solicitante: ${val("solicitanteRevogacao")||"@"}
 
 <:membro:1479904052375457822> ・Autorização: ${val("autorizacao")||"N/A."}
 
@@ -555,14 +722,24 @@ function updateComprovacoesField(){
   wrap.style.display=hide ? "none" : "block";
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
-  model=b.dataset.model; document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active"); updateComprovacoesField();
+  const preview=$("preview");
+  if(preview){
+    preview.classList.remove("copying-preview");
+    preview.setSelectionRange(0,0);
+    preview.blur();
+    if(window.getSelection) window.getSelection().removeAllRanges();
+  }
+  saveCategoryFields();
+  model=b.dataset.model; document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+  loadCategoryFields();
+  updateComprovacoesField();
   const rebaix=model==="rebaixamento", exilio=model==="exilio", novo=["entregar","treino","revogacao"].includes(model);
   document.body.classList.toggle("newmodel-active",novo);
   $("fields").classList.toggle("exilio-mode",exilio);
 
   // Os três novos modelos usam somente os seus próprios campos.
   // Oculta todos os campos dos modelos antigos antes de mostrar os específicos.
-  const baseIds=["responsavel","funcao","individuoWrap","solicitanteWrap","nick","idWrap","motivo","antigaWrap","novaWrap","obs","nickDiscordWrap","idDiscordWrap"];
+  const baseIds=["responsavel","funcao","individuoWrap","nick","idWrap","motivo","antigaWrap","novaWrap","obs","nickDiscordWrap","idDiscordWrap"];
   baseIds.forEach(id=>{
     const el=$(id);
     if(el && el.classList && el.classList.contains("field")) el.style.display=novo?"none":"block";
@@ -571,7 +748,7 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   $("antigaWrap").style.display=rebaix?"block":"none";$("novaWrap").style.display=rebaix?"block":"none";
   $("individuoWrap").style.display=exilio?"none":"block"; $("idWrap").style.display=exilio?"none":"block";
   $("solicitanteWrap").style.display=exilio?"block":"none";$("nickDiscordWrap").style.display=exilio?"block":"none";$("idDiscordWrap").style.display=exilio?"block":"none";
-  const ids=["atendenteWrap","solicitantePatenteWrap","autorizacaoWrap","nickIndividuoWrap","patenteEntregarWrap","tempoInatividadeWrap","comprovJustWrap","responsavelTreinoWrap","nickInstrutorWrap","nickMilitarWrap","patenteEntregueWrap","nickRevogarWrap","patentePerdidaWrap","motivoRevogacaoWrap","comprovRevogacaoWrap"];
+  const ids=["atendenteWrap","solicitantePatenteWrap","solicitanteRevogacaoWrap","autorizacaoWrap","nickIndividuoWrap","patenteEntregarWrap","tempoInatividadeWrap","comprovJustWrap","responsavelTreinoWrap","responsavelRevogacaoWrap","nickInstrutorWrap","nickMilitarWrap","patenteEntregueWrap","nickRevogarWrap","patentePerdidaWrap","motivoRevogacaoWrap","comprovRevogacaoWrap"];
   ids.forEach(id=>{ const el=$(id); el.style.display="none"; el.style.order="0"; });
   if(model==="entregar"){
     ["atendenteWrap","solicitantePatenteWrap","autorizacaoWrap","nickIndividuoWrap","patenteEntregarWrap","tempoInatividadeWrap","comprovJustWrap"]
@@ -582,43 +759,217 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
       .forEach((id,index)=>{ $(id).style.display="block"; $(id).style.order=String(index+1); });
   }
   if(model==="revogacao"){
-    ["responsavelTreinoWrap","solicitantePatenteWrap","autorizacaoWrap","nickRevogarWrap","patentePerdidaWrap","motivoRevogacaoWrap","comprovRevogacaoWrap"]
+    ["responsavelRevogacaoWrap","solicitanteRevogacaoWrap","autorizacaoWrap","nickRevogarWrap","patentePerdidaWrap","motivoRevogacaoWrap","comprovRevogacaoWrap"]
       .forEach((id,index)=>{ $(id).style.display="block"; $(id).style.order=String(index+1); });
   }
   updateComprovacoesField();
   build();
 });
-document.querySelectorAll("input,textarea").forEach(x=>x.addEventListener("input",build));
+const responsibleIds=["responsavel","atendente","responsavelTreino","responsavelRevogacao"];
+responsibleIds.forEach(id=>{
+  const field=$(id);
+  if(!field) return;
+  field.addEventListener("input",()=>{
+    const value=field.value;
+    responsibleIds.forEach(otherId=>{
+      const other=$(otherId);
+      if(other && other!==field) other.value=value;
+    });
+    build();
+  });
+});
+// Todos os campos de preenchimento são isolados por categoria/modelo.
+// EXCEÇÃO: Responsável, Atendente, Função e Solicitante permanecem compartilhados.
+const sharedFieldIds=new Set([
+  "responsavel","atendente","responsavelTreino","responsavelRevogacao",
+  "funcao","solicitante","solicitantePatente","solicitanteRevogacao"
+]);
+
+// Cada modelo possui SOMENTE os seus próprios campos.
+// Isso evita que campos ocultos de outro modelo sejam salvos, carregados
+// ou apagados por engano.
+const categoryFields={
+  advertencia:["individuo","nick","id","motivo","obs"],
+  rebaixamento:["individuo","nick","id","motivo","antiga","nova","obs"],
+  exilio:["nick","nickDiscord","idDiscord","motivo","provas"],
+  entregar:["autorizacao","nickIndividuo","patenteEntregar","tempoInatividade","comprovJust"],
+  treino:["nickInstrutor","nickMilitar","patenteEntregue","comprovJust"],
+  revogacao:["autorizacao","nickRevogar","patentePerdida","motivoRevogacao","comprovRevogacao"]
+};
+
+// Solicitante é compartilhado na lógica de preenchimento, mas cada categoria
+// possui seu próprio campo de solicitante para fins de LIMPAR.
+const categorySolicitanteId={
+  exilio:"solicitante",
+  entregar:"solicitantePatente",
+  revogacao:"solicitanteRevogacao"
+};
+
+const categoryFieldState={};
+
+function getCategoryFieldIds(){
+  return (categoryFields[model]||[]).filter(id=>!sharedFieldIds.has(id));
+}
+
+function saveCategoryFields(){
+  const ids=getCategoryFieldIds();
+  if(!categoryFieldState[model]) categoryFieldState[model]={};
+  ids.forEach(id=>{
+    const el=$(id);
+    if(el) categoryFieldState[model][id]=el.value;
+  });
+}
+
+function loadCategoryFields(){
+  const ids=getCategoryFieldIds();
+  const state=categoryFieldState[model]||{};
+  ids.forEach(id=>{
+    const el=$(id);
+    if(el) el.value=Object.prototype.hasOwnProperty.call(state,id)?state[id]:"";
+  });
+}
+
+// O @ inicial dos campos de identificação é permanente: nunca pode ser apagado.
+const camposArrobaFixos=["responsavel","solicitante","atendente","solicitantePatente","solicitanteRevogacao"];
+function protegerArroba(field){
+  if(!field) return;
+  if(!field.value.startsWith("@")) field.value="@"+field.value;
+  field.addEventListener("keydown",e=>{
+    const start=field.selectionStart ?? 0;
+    const end=field.selectionEnd ?? 0;
+    // Impede apagar/substituir o @ quando a seleção ou o cursor alcança o primeiro caractere.
+    if((e.key==="Backspace" && start<=1) || (e.key==="Delete" && start===0) ||
+       ((e.key.length===1 || e.key==="Backspace" || e.key==="Delete") && start===0 && end>0)){
+      if(start===0 || end>0){
+        e.preventDefault();
+        field.setSelectionRange(1,1);
+      }
+    }
+  });
+  field.addEventListener("input",()=>{
+    if(!field.value.startsWith("@")){
+      const old=field.value;
+      field.value="@"+old;
+      const pos=Math.max(1,Math.min(field.value.length,(field.selectionStart||0)+1));
+      field.setSelectionRange(pos,pos);
+    }
+    build();
+  });
+}
+camposArrobaFixos.forEach(id=>protegerArroba($(id)));
+
+// Campos exclusivos da categoria: salvam e atualizam a pré-visualização.
+document.querySelectorAll("input,textarea").forEach(x=>{
+  if(!sharedFieldIds.has(x.id) && Object.values(categoryFields).some(ids=>ids.includes(x.id))){
+    x.addEventListener("input",()=>{
+      saveCategoryFields();
+      build();
+    });
+  }
+});
+
+// Os campos compartilhados também precisam atualizar a pré-visualização
+// imediatamente, mas NUNCA entram no armazenamento isolado das categorias.
+["funcao","solicitante","solicitantePatente","solicitanteRevogacao"].forEach(id=>{
+  const field=$(id);
+  if(field) field.addEventListener("input",build);
+});
+
 $("copy").onclick=async()=>{
   const area=$("preview");
   const text=area.value;
-  area.focus();
-  area.select();
-  area.setSelectionRange(0,text.length);
+  area.classList.add("copying-preview");
 
   try{
+    // Mostra a seleção do relatório imediatamente antes da cópia.
+    area.focus();
+    area.select();
+    area.setSelectionRange(0,text.length);
+
     if(navigator.clipboard && window.isSecureContext){
       await navigator.clipboard.writeText(text);
     }else{
       document.execCommand("copy");
     }
-  }catch(e){}
+
+    // Mantém a seleção visível por 1500 ms e então desseleciona.
+    setTimeout(()=>{
+      area.classList.remove("copying-preview");
+      area.setSelectionRange(0,0);
+      area.blur();
+      if(window.getSelection) window.getSelection().removeAllRanges();
+    },1500);
+  }catch(e){
+    // Mesmo se a cópia falhar, remove a seleção após o mesmo intervalo.
+    setTimeout(()=>{
+      area.classList.remove("copying-preview");
+      area.setSelectionRange(0,0);
+      area.blur();
+      if(window.getSelection) window.getSelection().removeAllRanges();
+    },1500);
+  }
 
   const notice=$("copyNotice");
   if(notice){
     notice.classList.add("show");
     clearTimeout(window.copyNoticeTimer);
-    window.copyNoticeTimer=setTimeout(()=>notice.classList.remove("show"),3000);
+    window.copyNoticeTimer=setTimeout(()=>notice.classList.remove("show"),1500);
   }
 }
+
 $("clear").onclick=()=>{
-  document.querySelectorAll("input,textarea").forEach(x=>{
-    if(x.id==="responsavel"||x.id==="atendente"||x.id==="solicitantePatente"||x.id==="responsavelTreino"||x.id==="solicitante") x.value="@";
-    else x.value="";
+  const area=$("preview");
+  area.classList.remove("copying-preview");
+  area.classList.add("clearing-preview");
+  clearTimeout(window.clearPreviewTimer);
+
+  // Mantém a borda vermelha escura visível por 1500 ms.
+  window.clearPreviewTimer=setTimeout(()=>{
+    area.classList.remove("clearing-preview");
+  },1500);
+
+  // Limpa os campos da categoria atual e também a Função, que é compartilhada.
+  // A Função volta a ficar fisicamente vazia (o placeholder "Corregedoria."
+  // continua apenas como indicação visual no campo), enquanto a pré-visualização
+  // usa "Corregedoria." como valor padrão até que o usuário digite outra coisa.
+  // Nos campos de Solicitante, preserva o "@" inicial e remove apenas
+  // o texto digitado depois dele.
+  const currentState=categoryFieldState[model]||{};
+
+  const funcaoField=$("funcao");
+  if(funcaoField){
+    funcaoField.value="";
+  }
+
+  // Primeiro, limpa somente os campos exclusivos da categoria atual.
+  getCategoryFieldIds().forEach(id=>{
+    const el=$(id);
+    if(!el) return;
+    el.value="";
+    currentState[id]="";
   });
+
+  // Solicitante é um campo separado em cada modelo, embora não faça parte
+  // dos campos exclusivos acima. Ao limpar, preserva o "@" inicial.
+  const solicitanteId=categorySolicitanteId[model];
+  if(solicitanteId){
+    const solicitante=$(solicitanteId);
+    if(solicitante){
+      const value=solicitante.value||"";
+      solicitante.value=value.startsWith("@") ? "@" : "";
+    }
+  }
+
+  categoryFieldState[model]=currentState;
   build();
 };
-setInterval(()=>{$("clock").textContent=now()},1000);updateComprovacoesField();build();
+
+setInterval(()=>{
+  $("clock").textContent=now();
+  build();
+},1000);
+updateComprovacoesField();
+build();
 window.addEventListener("resize",resizePreview);
 </script>
 
