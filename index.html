@@ -36,6 +36,19 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
 .fields .field select{background:#222!important;color:#f4f4f4!important;border-color:#000!important;}
 .tab.active{background:#000!important;color:#fff!important;border-color:#000!important;opacity:1!important;}
 
+
+/* Pré-visualização fixada no topo durante o preenchimento de campos longos.
+   A regra existe somente no mobile e é ativada pelo JavaScript ao tocar
+   nos campos de motivo/função/observações/comprovações/patentes. */
+@media(max-width:850px){
+  .grid > .card.mobile-preview-pinned{
+    position:sticky!important;
+    top:0!important;
+    z-index:50!important;
+    align-self:start!important;
+  }
+}
+
 /* No mobile, a pré-visualização aparece antes do preenchimento.
    No desktop, a ordem original permanece inalterada. */
 @media(max-width:850px){
@@ -105,6 +118,19 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
     text-size-adjust: none;
   }
 }
+
+@media(max-width:850px){
+  .mobile-preview-text-caret{
+    position:absolute;
+    width:3px;
+    background:#ffffff;
+    border-radius:1px;
+    pointer-events:none;
+    z-index:20;
+    animation:mobilePreviewCaretBlink 1s steps(1,end) infinite;
+  }
+}
+@keyframes mobilePreviewCaretBlink{50%{opacity:0}}
 
 .copy-notice{
   display:none;
@@ -303,6 +329,67 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
   border-color:#681c28 !important;
 }
 
+/* Remove o destaque azul padrão ao tocar/clicar em qualquer elemento */
+*,
+*::before,
+*::after{
+  -webkit-tap-highlight-color:transparent !important;
+}
+
+*:focus,
+*:focus-visible{
+  outline:none !important;
+}
+
+button,
+a,
+input,
+textarea,
+select,
+[role="button"]{
+  -webkit-tap-highlight-color:transparent !important;
+}
+
+button:active,
+a:active,
+input:active,
+textarea:active,
+select:active,
+[role="button"]:active{
+  -webkit-tap-highlight-color:transparent !important;
+}
+
+
+/* Seta pequena no canto superior direito da área de preenchimento.
+   Ao tocar/clicar, avança para a próxima categoria. */
+.filling-card{position:relative;}
+.fill-category-arrow{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:18px;
+  height:18px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:0;
+  background:none !important;
+  color:#f4f4f4;
+  font:900 20px/1 Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+  cursor:pointer;
+  z-index:5;
+  -webkit-tap-highlight-color:transparent;
+  box-shadow:none !important;
+}
+.fill-category-arrow:hover,.fill-category-arrow:focus,.fill-category-arrow:active{
+  background:none !important;
+  box-shadow:none !important;
+  outline:none !important;
+}
+/* SOLICITAÇÃO DE REVOGAÇÃO — remove somente a área de preenchimento "Comprovações". */
+#comprovRevogacaoWrap{
+  display:none!important;
+}
 </style>
 
 <style id="desktop-layout-fix">
@@ -333,6 +420,24 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
 </style>
 
 
+
+<style id="desktop-preview-caret">
+/* CURSOR DA PRÉ-VISUALIZAÇÃO — DESKTOP SOMENTE.
+   Não altera nenhuma regra usada em telas de até 850px. */
+@media (min-width:851px){
+  .desktop-preview-text-caret{
+    position:absolute;
+    width:1.5px;
+    background:#ffffff;
+    border-radius:1px;
+    pointer-events:none;
+    z-index:20;
+    animation:desktopPreviewCaretBlink 1s steps(1,end) infinite;
+    display:none;
+  }
+}
+@keyframes desktopPreviewCaretBlink{50%{opacity:0}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -351,7 +456,8 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
 </div>
 
 <div class="grid">
-<section class="card">
+<section class="card filling-card">
+  <button type="button" class="fill-category-arrow" id="fillCategoryArrow" aria-label="Mudar para a próxima categoria" title="Próxima categoria">›</button>
   <h2>Preenchimento</h2><div class="sub">Digite os dados e o documento será atualizado automaticamente.</div>
   <div class="fields" id="fields">
     <div class="field"><label>Responsável:</label><input id="responsavel" value="@"></div>
@@ -393,7 +499,6 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
   <textarea class="preview" id="preview" readonly spellcheck="false"></textarea>
   <div class="actions"><button class="btn primary" id="copy">Copiar documento</button><button class="btn secondary" id="clear">Limpar</button></div><div class="hint date-hint">A data e a hora são inseridas automaticamente no momento da geração.</div>
 </section>
-</div>
 </div>
 
 <section class="penalty-section" id="penaltySection">
@@ -487,6 +592,9 @@ body.newmodel-active .preview{display:block!important;visibility:visible!importa
     </div>    </div>
   </div>
 </section>
+</div>
+
+
 
 <script>
 let model="advertencia";
@@ -534,13 +642,49 @@ function resizePreview(){
    ========================================================= */
 const AUTO_SAVE_KEY = "atp_form_autosave_v1";
 
+// O estado de fixação da tela nunca deve ser salvo.
+// Limpa possíveis chaves de versões antigas para impedir que o HTML absorva
+// um histórico de fixação e faça a mecânica parar em entradas posteriores.
+(function clearLegacyPinState(){
+  const legacyKeys = [
+    "mobilePreviewPinned", "mobile-preview-pinned", "previewPinned",
+    "previewPinnedState", "typingLock", "lockedScroll",
+    "mobile_preview_pinned", "atp_mobile_preview_pin",
+    "atp_preview_pin_state", "atp_form_pin_state"
+  ];
+  try{
+    legacyKeys.forEach(k=>{
+      localStorage.removeItem(k);
+      sessionStorage.removeItem(k);
+    });
+  }catch(e){}
+})();
+
 function getAutosaveFields(){
   return Array.from(document.querySelectorAll(
     "input:not([type='button']):not([type='submit']):not([type='reset']):not([type='file']), textarea, select"
   ));
 }
 
+function normalizeFixedAtFields(){
+  const fixedIds = [
+    "responsavel","atendente","responsavelTreino","responsavelRevogacao",
+    "solicitante","solicitantePatente","solicitanteRevogacao"
+  ];
+  fixedIds.forEach(id=>{
+    const field=$(id);
+    if(field && !String(field.value||"").startsWith("@")){
+      field.value = "@" + String(field.value||"");
+    }
+  });
+}
+
 function saveFormAutomatically(){
+  // Nunca persiste um estado em que um campo protegido perdeu o @.
+  // Se o navegador internalizar a exclusão antes do listener de proteção,
+  // o @ é restaurado antes da leitura do valor para o localStorage.
+  normalizeFixedAtFields();
+
   const data = {};
   getAutosaveFields().forEach((field, index) => {
     const key = field.id || field.name || `field_${index}`;
@@ -586,6 +730,10 @@ function restoreFormAutomatically(){
       field.value = saved.value;
     }
   });
+
+  // Corrige imediatamente qualquer estado antigo do autosave que tenha
+  // sido salvo sem o @ antes desta proteção existir.
+  normalizeFixedAtFields();
 
   // Rebuild any generated preview/content using the restored values.
   if(typeof build === "function"){
@@ -829,6 +977,18 @@ function loadCategoryFields(){
   });
 }
 
+// Backspace/Delete no preenchimento nunca devem provocar avanço de foco.
+// O navegador normalmente mantém o foco, mas este bloqueio também cancela
+// qualquer avanço automático que já tenha sido agendado por uma interação anterior.
+(function keepFocusOnDelete(){
+  const FIELD_SELECTOR = '#fields input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"]), #fields textarea, #fields select';
+  document.addEventListener("keydown", e=>{
+    if((e.key!=="Backspace" && e.key!=="Delete") || !e.target?.matches?.(FIELD_SELECTOR)) return;
+    if(typeof timers !== "undefined" && timers.has(e.target)) timers.delete(e.target);
+    // Não preventDefault: a exclusão normal do texto deve continuar funcionando.
+  }, true);
+})();
+
 // O @ inicial dos campos de identificação é permanente: nunca pode ser apagado.
 const camposArrobaFixos=["responsavel","solicitante","atendente","solicitantePatente","solicitanteRevogacao"];
 function protegerArroba(field){
@@ -839,7 +999,8 @@ function protegerArroba(field){
     const end=field.selectionEnd ?? 0;
     // Impede apagar/substituir o @ quando a seleção ou o cursor alcança o primeiro caractere.
     if((e.key==="Backspace" && start<=1) || (e.key==="Delete" && start===0) ||
-       ((e.key.length===1 || e.key==="Backspace" || e.key==="Delete") && start===0 && end>0)){
+       ((e.key.length===1 || e.key==="Backspace" || e.key==="Delete") && start===0 && end>0) ||
+       ((e.key==="Backspace" || e.key==="Delete") && start===0 && end===field.value.length && field.value.startsWith("@"))){
       if(start===0 || end>0){
         e.preventDefault();
         field.setSelectionRange(1,1);
@@ -857,6 +1018,588 @@ function protegerArroba(field){
   });
 }
 camposArrobaFixos.forEach(id=>protegerArroba($(id)));
+
+// Proteção adicional contra estados intermediários do navegador: se um @
+// for removido e o evento input chegar antes de qualquer outra rotina, ele
+// volta imediatamente e nunca fica persistido sem o caractere.
+document.addEventListener("input", e=>{
+  if(e.target && camposArrobaFixos.includes(e.target.id)){
+    if(!String(e.target.value||"").startsWith("@")){
+      e.target.value = "@" + String(e.target.value||"");
+      try{
+        const p=Math.max(1,Math.min(e.target.value.length,(e.target.selectionStart||0)+1));
+        e.target.setSelectionRange(p,p);
+      }catch(_){}
+    }
+  }
+}, true);
+
+// No mobile, estes campos mantêm a área de pré-visualização fixada no topo
+// enquanto o usuário trabalha neles. A lista usa somente IDs reais do HTML.
+(function pinPreviewOnLongFields(){
+  const MOBILE_MAX=850;
+  const targetIds=new Set([
+    "motivo", "provas", "comprovJust", "patenteEntregue",
+    "motivoRevogacao", "comprovRevogacao"
+  ]);
+  const preview=document.getElementById("preview");
+  const card=preview ? preview.closest(".card") : null;
+  if(!card) return;
+
+  let previewPinned=false;
+  let typingLock=false;
+  let typingIdleTimer=0;
+  let lockedScroll=null;
+  let lockFrame=0;
+
+  function mobile(){
+    return window.matchMedia(`(max-width:${MOBILE_MAX}px)`).matches;
+  }
+
+  function isTargetField(el){
+    if(!el) return false;
+    // Estas áreas não participam mais da mecânica de fixação:
+    // Antiga Função, Nova Função e Patente perdida.
+    if(["antiga","nova","patentePerdida"].includes(el.id)) return false;
+    // Observações não mantém a fixação somente na categoria REBAIXAMENTO.
+    if(el.id==="obs") return model!=="rebaixamento";
+    return targetIds.has(el.id);
+  }
+
+  function pinSmoothOnce(){
+    if(!mobile() || previewPinned) return false;
+    previewPinned=true;
+    card.classList.add("mobile-preview-pinned");
+    requestAnimationFrame(()=>{
+      try{
+        card.scrollIntoView({behavior:"smooth", block:"start", inline:"nearest"});
+      }catch(_){
+        card.scrollIntoView(true);
+      }
+    });
+    return true;
+  }
+
+  function stopTypingLock(){
+    clearTimeout(typingIdleTimer);
+    typingIdleTimer=0;
+    typingLock=false;
+    lockedScroll=null;
+    cancelAnimationFrame(lockFrame);
+    lockFrame=0;
+    // Libera apenas a fixação; não executa qualquer novo movimento.
+    // Assim, uma nova entrada em um campo devido pode iniciar nova fixação.
+    previewPinned=false;
+    card.classList.remove("mobile-preview-pinned");
+  }
+
+  function keepPinnedPosition(){
+    if(!typingLock || !lockedScroll) return;
+    window.scrollTo({left:lockedScroll.x, top:lockedScroll.y, behavior:"auto"});
+  }
+
+  function beginTypingLock(field){
+    if(!mobile() || !isTargetField(field)) return;
+
+    // A fixação pode ser iniciada pelo clique ou pelo primeiro caractere.
+    // Depois de iniciada, durante a digitação a página fica rigidamente
+    // presa na posição atual, sem novas animações ou reposicionamentos.
+    pinSmoothOnce();
+
+    // Captura a posição uma única vez para esta sequência de digitação.
+    // Não atualizamos esta posição a cada caractere.
+    if(!typingLock){
+      typingLock=true;
+      lockedScroll={x:window.scrollX, y:window.scrollY};
+    }
+
+    clearTimeout(typingIdleTimer);
+    typingIdleTimer=setTimeout(stopTypingLock,650);
+
+    keepPinnedPosition();
+    cancelAnimationFrame(lockFrame);
+    lockFrame=requestAnimationFrame(()=>{
+      keepPinnedPosition();
+      lockFrame=0;
+    });
+  }
+
+  // SOMENTE clique/tap nos campos determinados pode iniciar a fixação.
+  document.addEventListener("click", e=>{
+    const field=e.target?.closest?.("input, textarea, select");
+    if(!isTargetField(field) || !mobile()) return;
+    if(!typingLock){
+      previewPinned=false;
+      card.classList.remove("mobile-preview-pinned");
+    }
+    pinSmoothOnce();
+  }, true);
+
+  // Digitação: se o campo estava vazio, o primeiro caractere faz a subida
+  // suave. Depois disso, a posição é mantida enquanto o usuário continua
+  // digitando; não há nova animação a cada caractere.
+  document.addEventListener("beforeinput", e=>{
+    const field=e.target;
+    if(!isTargetField(field) || !mobile()) return;
+
+    if(e.inputType === "insertText"){
+      if(String(field.value || "").length===0) pinSmoothOnce();
+      beginTypingLock(field);
+      return;
+    }
+
+    // Exclusões nunca alteram a posição e nunca iniciam a fixação.
+    if(e.inputType && e.inputType.startsWith("delete")) return;
+  }, true);
+
+  // Alguns teclados móveis não entregam beforeinput=insertText de forma
+  // consistente. O input cobre esses casos sem reagir a exclusões.
+  document.addEventListener("input", e=>{
+    const field=e.target;
+    if(!isTargetField(field) || !mobile()) return;
+    if(e.inputType && e.inputType.startsWith("delete")) return;
+    if(e.inputType === "insertText" || e.inputType === "insertCompositionText"){
+      beginTypingLock(field);
+    }
+  }, true);
+
+  // Enquanto o usuário digita, qualquer tentativa do teclado/sistema de
+  // mover a viewport é imediatamente neutralizada. Ao parar, o bloqueio é
+  // apenas removido — a tela NÃO recebe nenhum novo comando de movimento.
+  window.addEventListener("scroll", ()=>{
+    if(typingLock) keepPinnedPosition();
+  }, {passive:true});
+
+  // Exclusão: não cria, reinicia nem libera a fixação e não altera a tela.
+  const deleteTypes=new Set([
+    "deleteContentBackward","deleteContentForward","deleteByCut",
+    "deleteByDrag","deleteWordBackward","deleteWordForward",
+    "deleteSoftLineBackward","deleteSoftLineForward",
+    "deleteHardLineBackward","deleteHardLineForward",
+    "deleteEntireSoftLine"
+  ]);
+
+  document.addEventListener("beforeinput", e=>{
+    if(!isTargetField(e.target) || !mobile()) return;
+    if(deleteTypes.has(e.inputType)){
+      // Não chamar pinSmoothOnce(), não alterar lockedScroll e não iniciar
+      // qualquer animação. A exclusão permanece totalmente neutra.
+    }
+  }, true);
+})();
+
+
+// Ao começar a digitar em um campo de preenchimento, leva a tela para a
+// pré-visualização. O movimento acontece apenas uma vez por foco, evitando
+// que cada tecla altere novamente a posição da página.
+
+
+/* =========================================================
+   AUTO AVANÇO AO COLAR — DESKTOP + MOBILE
+   Desktop: evento paste.
+   Mobile: também detecta a colagem feita pelo menu/área de
+   transferência do teclado Android, que pode não disparar
+   "paste" de forma confiável. A detecção usa beforeinput,
+   inputType=insertFromPaste e uma heurística segura para
+   inserções de vários caracteres em um único input.
+   ========================================================= */
+(function initUniversalPasteAdvance(){
+  const MOBILE_MAX = 850;
+  const timers = new WeakMap();
+
+  function isField(el){
+    return el && el.matches(
+      '#fields input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"]), #fields textarea, #fields select'
+    );
+  }
+
+  function isVisible(el){
+    if(!el || !el.isConnected || el.disabled) return false;
+    const s = getComputedStyle(el);
+    return s.display !== "none" &&
+           s.visibility !== "hidden" &&
+           el.getClientRects().length > 0;
+  }
+
+  function getFields(){
+    return Array.from(document.querySelectorAll(
+      '#fields input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"]), #fields textarea, #fields select'
+    )).filter(isVisible);
+  }
+
+  /*
+   * A navegação não usa a ordem do DOM. No mobile a pré-visualização
+   * aparece antes do preenchimento e o layout é diferente do desktop.
+   * Por isso o destino é definido pelo modelo e pelo ID do campo.
+   */
+  const NEXT_BY_MODEL = {
+    advertencia: {
+      responsavel:"funcao", funcao:"individuo", individuo:"nick",
+      nick:"id", id:"motivo", motivo:"obs"
+    },
+    rebaixamento: {
+      responsavel:"funcao", funcao:"individuo", individuo:"nick",
+      nick:"id", id:"motivo", motivo:"antiga", antiga:"nova", nova:"obs"
+    },
+    exilio: {
+      responsavel:"funcao", funcao:"solicitante", solicitante:"nick",
+      nick:"nickDiscord", nickDiscord:"idDiscord", idDiscord:"motivo",
+      motivo:"provas"
+    },
+    entregar: {
+      atendente:"solicitantePatente", solicitantePatente:"autorizacao",
+      autorizacao:"nickIndividuo", nickIndividuo:"patenteEntregar",
+      patenteEntregar:"tempoInatividade", tempoInatividade:"comprovJust"
+    },
+    treino: {
+      responsavelTreino:"nickInstrutor", nickInstrutor:"nickMilitar",
+      nickMilitar:"patenteEntregue", patenteEntregue:"comprovJust"
+    },
+    revogacao: {
+      responsavelRevogacao:"solicitanteRevogacao",
+      solicitanteRevogacao:"autorizacao", autorizacao:"nickRevogar",
+      nickRevogar:"patentePerdida", patentePerdida:"motivoRevogacao",
+      motivoRevogacao:"comprovRevogacao"
+    }
+  };
+
+  function activeModel(){
+    const tab=document.querySelector('.tabs .tab.active[data-model]');
+    return tab ? tab.dataset.model : null;
+  }
+
+  function nextField(current){
+    const model=activeModel();
+    const nextId=NEXT_BY_MODEL[model]?.[current.id];
+    const next=nextId ? document.getElementById(nextId) : null;
+    return next && isField(next) && !next.disabled ? next : null;
+  }
+
+  function advance(current){
+    if(!isField(current)) return;
+    if(timers.has(current)) return;
+
+    const next = nextField(current);
+    if(!next) return;
+
+    timers.set(current, true);
+
+    // Sem atraso perceptível: o foco muda no mesmo ciclo de interação.
+    requestAnimationFrame(()=>{
+      next.focus({preventScroll:true});
+
+      if(typeof next.setSelectionRange === "function"){
+        const end = next.value.length;
+        next.setSelectionRange(end, end);
+      }
+
+      // No mobile, posiciona o próximo campo sem esperar a animação.
+      if(window.matchMedia(`(max-width:${MOBILE_MAX}px)`).matches){
+        next.scrollIntoView({behavior:"smooth", block:"center"});
+      }
+
+      setTimeout(()=>timers.delete(current), 80);
+    });
+  }
+
+  // 1) Caminho tradicional: botão/menu "Colar".
+  // A colagem continua avançando automaticamente para o campo seguinte.
+  document.addEventListener("paste", e=>{
+    if(isField(e.target)) advance(e.target);
+  }, true);
+
+  // 2) Caminho usado por teclados móveis ao tocar um item da área
+  // de transferência. Alguns navegadores Android informam
+  // explicitamente insertFromPaste.
+  document.addEventListener("beforeinput", e=>{
+    if(!isField(e.target)) return;
+    if(e.inputType === "insertFromPaste" ||
+       e.inputType === "insertFromPasteAsQuotation"){
+      advance(e.target);
+    }
+  }, true);
+
+  // 3) Fallback mobile: quando a área de transferência injeta
+  //    texto diretamente, o "paste" pode não existir, mas o
+  //    input acontece. Se uma única interação inserir vários
+  //    caracteres de uma vez, tratamos como colagem.
+  document.querySelectorAll(
+    '#fields input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"]), #fields textarea'
+  ).forEach(field=>{
+    let previous = field.value;
+
+    field.addEventListener("input", e=>{
+      const current = field.value;
+      const oldLen = previous.length;
+      const newLen = current.length;
+      const delta = Math.abs(newLen - oldLen);
+
+      previous = current;
+
+      if(!window.matchMedia(`(max-width:${MOBILE_MAX}px)`).matches) return;
+      if(e.inputType === "insertFromPaste" ||
+         e.inputType === "insertFromPasteAsQuotation") return;
+
+      // Só avançamos quando houve AUMENTO de conteúdo em um único evento.
+      // Importante: ao selecionar texto e apagar, o delta também pode ser
+      // maior que 1. Nesse caso o tamanho diminui e NÃO pode avançar.
+      // As colagens normais já são tratadas pelos eventos paste/beforeinput;
+      // este bloco fica apenas como fallback para teclados móveis que não
+      // informam corretamente o tipo de colagem.
+      if(newLen > oldLen && delta >= 2){
+        advance(field);
+      }
+    });
+
+    field.addEventListener("focus", ()=>{
+      previous = field.value;
+    });
+  });
+})();
+
+
+/* =========================================================
+   FALLBACK EXTRA PARA ÁREA DE TRANSFERÊNCIA MOBILE
+   Alguns teclados Android inserem o conteúdo sem gerar um
+   evento "paste". Quando o navegador permite ler a área de
+   transferência, verificamos mudanças enquanto um campo está
+   focado. A leitura é opcional e silenciosamente ignorada
+   quando a permissão não estiver disponível.
+   ========================================================= */
+(function initMobileClipboardWatcher(){
+  if(!navigator.clipboard || typeof navigator.clipboard.readText !== "function") return;
+  if(!window.matchMedia("(max-width:850px)").matches) return;
+
+  let activeField = null;
+  let lastClipboard = null;
+  let checking = false;
+
+  document.addEventListener("focusin", e=>{
+    if(isClipboardField(e.target)){
+      activeField = e.target;
+      lastClipboard = null;
+    }
+  });
+
+  document.addEventListener("focusout", e=>{
+    if(e.target === activeField) activeField = null;
+  });
+
+  function isClipboardField(el){
+    return el && el.matches(
+      '#fields input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"]), #fields textarea'
+    );
+  }
+
+  async function check(){
+    if(checking || !activeField || !document.hasFocus()) return;
+    checking = true;
+    try{
+      const text = await navigator.clipboard.readText();
+      if(text && lastClipboard === null) lastClipboard = text;
+      else if(text && text !== lastClipboard){
+        lastClipboard = text;
+
+        // Se o teclado já colocou o texto no campo, não duplicamos.
+        // Caso não tenha colocado, inserimos sem trocar o foco.
+        if(activeField.value !== text && text.length){
+          const start = activeField.selectionStart ?? activeField.value.length;
+          const end = activeField.selectionEnd ?? start;
+          activeField.setRangeText(text, start, end, "end");
+          activeField.dispatchEvent(new Event("input", {bubbles:true}));
+        }
+        // Não avançar para o próximo campo: mantém a área de
+        // transferência aberta e o foco no campo atual.
+      }
+    }catch(_){}
+    finally{
+      checking = false;
+    }
+  }
+
+  setInterval(check, 180);
+})();
+
+/* =========================================================
+   CURSOR DE TEXTO DA PRÉ-VISUALIZAÇÃO — SOMENTE MOBILE
+   O documento usa zoom: 50% no mobile. O cursor é calculado a partir
+   do caractere real no textarea de pré-visualização, sem alterar o
+   posicionamento ou funcionamento do desktop.
+   ========================================================= */
+(function initMobilePreviewCaret(){
+  const MOBILE_MAX=850;
+  const FIELD_LABELS={
+    responsavel:"Responsável:", funcao:"Função:", individuo:"Indivíduo(s):",
+    solicitante:"Solicitante:", nick:"Nick do Roblox:", id:"ID:",
+    motivo:"Motivo(s):", antiga:"Antiga Função:", nova:"Nova Função:",
+    obs:"Observações:", provas:"Comprovações:", nickDiscord:"Nick Discord:",
+    idDiscord:"ID Discord:", atendente:"Atendente:",
+    solicitantePatente:"Solicitante:", autorizacao:"Autorização:",
+    nickIndividuo:"Nick do indivíduo:", patenteEntregar:"Patente a entregar:",
+    tempoInatividade:"Tempo de inatividade:", comprovJust:"Comprovações/Justificativa:",
+    responsavelTreino:"Responsável:", nickInstrutor:"Nick do instrutor:",
+    nickMilitar:"Nick do militar aprovado:", patenteEntregue:"Patente entregue:",
+    responsavelRevogacao:"Responsável:", solicitanteRevogacao:"Solicitante:",
+    nickRevogar:"Nick do indivíduo a ser revogado:", patentePerdida:"Patente perdida:",
+    motivoRevogacao:"Motivo:", comprovRevogacao:"Comprovações:"
+  };
+
+  let activeField=null;
+  let caret=null;
+  let mirror=null;
+
+  function mobile(){ return window.matchMedia(`(max-width:${MOBILE_MAX}px)`).matches; }
+
+  function ensureCaret(){
+    const preview=$("preview");
+    if(!preview || !mobile()) return null;
+    if(caret) return caret;
+    const parent=preview.parentElement;
+    if(!parent) return null;
+    if(getComputedStyle(parent).position==='static') parent.style.position='relative';
+    caret=document.createElement('span');
+    caret.className='mobile-preview-text-caret';
+    caret.setAttribute('aria-hidden','true');
+    parent.appendChild(caret);
+    return caret;
+  }
+
+  function ensureMirror(){
+    const preview=$("preview");
+    if(!preview || !mobile()) return null;
+    if(mirror) return mirror;
+    mirror=document.createElement('div');
+    mirror.setAttribute('aria-hidden','true');
+    mirror.style.cssText='position:absolute;visibility:hidden;pointer-events:none;white-space:pre-wrap;overflow-wrap:break-word;word-break:break-word;left:-100000px;top:0;';
+    document.body.appendChild(mirror);
+    return mirror;
+  }
+
+  function syncMirror(preview){
+    const m=ensureMirror();
+    if(!m) return null;
+    const cs=getComputedStyle(preview);
+    const props=['font','fontFamily','fontSize','fontWeight','fontStyle','lineHeight','letterSpacing','textTransform','textIndent','wordSpacing','whiteSpace','paddingTop','paddingRight','paddingBottom','paddingLeft','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','boxSizing'];
+    props.forEach(k=>m.style[k]=cs[k]);
+    m.style.width=preview.clientWidth+'px';
+    m.style.minHeight=preview.clientHeight+'px';
+    m.textContent=preview.value;
+    return m;
+  }
+
+  function findInsertion(field){
+    const preview=$("preview");
+    if(!preview || !field) return -1;
+    const label=FIELD_LABELS[field.id];
+    if(!label) return -1;
+    const text=preview.value;
+    const start=text.indexOf(label);
+    if(start<0) return -1;
+    const colon=start+label.length-1;
+    // Os modelos usam ": " antes do conteúdo. Mantemos o cursor depois
+    // desse espaço, visualmente logo após os dois pontos.
+    let pos=colon+1;
+    if(text[pos]===' ') pos++;
+    const value=field.value ?? '';
+    // Posiciona depois do valor correspondente, acompanhando cada caractere.
+    return Math.min(text.length,pos+value.length);
+  }
+
+  function placeCaret(){
+    if(!mobile() || !activeField) return;
+    const preview=$("preview");
+    const c=ensureCaret();
+    const m=syncMirror(preview);
+    if(!preview || !c || !m) return;
+    const index=findInsertion(activeField);
+    if(index<0){ c.style.display='none'; return; }
+
+    const range=document.createRange();
+    const node=m.firstChild;
+    if(!node){ c.style.display='none'; return; }
+    range.setStart(node,index);
+    range.setEnd(node,index);
+    const rr=range.getBoundingClientRect();
+    const mr=m.getBoundingClientRect();
+    const pr=preview.getBoundingClientRect();
+    const parentRect=preview.parentElement.getBoundingClientRect();
+    const cs=getComputedStyle(preview);
+    const scale=0.5; // zoom fixo do mobile deste arquivo
+    // A régua (mirror) fica fora da tela; por isso medimos o caractere
+    // em relação ao próprio mirror e depois transferimos para o preview.
+    const x=(rr.left-mr.left)+(pr.left-parentRect.left);
+    const y=(rr.top-mr.top)+(pr.top-parentRect.top);
+
+    // O cursor fica exatamente com a altura visual do caractere ":".
+    let caretHeight=Math.max(1,rr.height);
+    const label=FIELD_LABELS[activeField.id] || '';
+    const labelStart=m.textContent.indexOf(label);
+    const colonIndex=labelStart>=0 ? labelStart+label.length-1 : -1;
+    if(colonIndex>=0 && node){
+      const colonRange=document.createRange();
+      colonRange.setStart(node,colonIndex);
+      colonRange.setEnd(node,colonIndex+1);
+      const colonRect=colonRange.getBoundingClientRect();
+      if(colonRect.height>0) caretHeight=colonRect.height;
+    }
+
+    c.style.display='block';
+    c.style.left=(x/scale)+'px';
+    c.style.top=(y/scale)+'px';
+    c.style.height=((caretHeight*0.82)/scale)+'px';
+    c.style.width='1.5px';
+  }
+
+  function activate(field){
+    activeField=field;
+    requestAnimationFrame(()=>requestAnimationFrame(placeCaret));
+  }
+
+  function hide(){
+    if(caret) caret.style.display='none';
+    activeField=null;
+  }
+
+  document.addEventListener('focusin',e=>{
+    if(!mobile()) return;
+    const el=e.target;
+    if(el && el.matches('input,textarea,select') && el.id!=='preview') activate(el);
+  });
+  document.addEventListener('input',e=>{
+    if(!mobile()) return;
+    const el=e.target;
+    if(el && el.matches('input,textarea,select') && el.id!=='preview'){
+      activeField=el;
+      requestAnimationFrame(()=>requestAnimationFrame(placeCaret));
+    }
+  });
+  window.addEventListener('resize',()=>{
+    if(mobile() && activeField) requestAnimationFrame(placeCaret);
+    else hide();
+  });
+  window.addEventListener('orientationchange',()=>setTimeout(()=>{
+    if(mobile() && activeField) placeCaret();
+  },80));
+
+  // O build() existente atualiza o textarea; espera o DOM pintar antes de medir.
+  const oldBuild=window.build;
+  if(typeof oldBuild==='function'){
+    window.build=function(){
+      const result=oldBuild.apply(this,arguments);
+      if(mobile() && activeField) requestAnimationFrame(()=>requestAnimationFrame(placeCaret));
+      return result;
+    };
+  }
+})();
+
+/* A tela não é levada para a pré-visualização ao digitar/colar.
+   A colagem permanece no campo atual para manter a área de
+   transferência do teclado aberta. */
+const previewFocusState=new WeakSet();
+const camposPreenchimento=document.querySelectorAll("input:not([type='button']):not([type='submit']):not([type='reset']):not([type='file']), textarea, select");
+camposPreenchimento.forEach(field=>{
+  field.addEventListener("focus",()=>previewFocusState.delete(field));
+});
 
 // Campos exclusivos da categoria: salvam e atualizam a pré-visualização.
 document.querySelectorAll("input,textarea").forEach(x=>{
@@ -965,8 +1708,9 @@ $("clear").onclick=()=>{
 };
 
 setInterval(()=>{
+  // Atualiza somente o relógio. Não reconstrói a pré-visualização
+  // a cada segundo, evitando que a página altere a posição do scroll.
   $("clock").textContent=now();
-  build();
 },1000);
 updateComprovacoesField();
 build();
@@ -977,6 +1721,382 @@ window.addEventListener("resize",resizePreview);
 
 
 
+
+
+<script>
+/* Cursor visual da pré-visualização — DESKTOP.
+   Isolado do cursor mobile: nenhuma rotina abaixo é executada até 850px. */
+(function initDesktopPreviewCaret(){
+  const DESKTOP_MIN=851;
+  const FIELD_LABELS={
+    responsavel:"Responsável:", funcao:"Função:", individuo:"Indivíduo(s):",
+    solicitante:"Solicitante:", nick:"Nick do Roblox:", id:"ID:",
+    motivo:"Motivo(s):", antiga:"Antiga Função:", nova:"Nova Função:",
+    obs:"Observações:", provas:"Comprovações:", nickDiscord:"Nick Discord:",
+    idDiscord:"ID Discord:", atendente:"Atendente:",
+    solicitantePatente:"Solicitante:", autorizacao:"Autorização:",
+    nickIndividuo:"Nick do indivíduo:", patenteEntregar:"Patente a entregar:",
+    tempoInatividade:"Tempo de inatividade:", comprovJust:"Comprovações/Justificativa:",
+    responsavelTreino:"Responsável:", nickInstrutor:"Nick do instrutor:",
+    nickMilitar:"Nick do militar aprovado:", patenteEntregue:"Patente entregue:",
+    responsavelRevogacao:"Responsável:", solicitanteRevogacao:"Solicitante:",
+    nickRevogar:"Nick do indivíduo a ser revogado:", patentePerdida:"Patente perdida:",
+    motivoRevogacao:"Motivo:", comprovRevogacao:"Comprovações:"
+  };
+
+  let activeField=null;
+  let caret=null;
+  let mirror=null;
+
+  function desktop(){
+    return window.matchMedia(`(min-width:${DESKTOP_MIN}px)`).matches;
+  }
+
+  function ensureCaret(){
+    const preview=document.getElementById("preview");
+    if(!preview || !desktop()) return null;
+    if(caret) return caret;
+    const parent=preview.parentElement;
+    if(!parent) return null;
+    if(getComputedStyle(parent).position==="static") parent.style.position="relative";
+    caret=document.createElement("span");
+    caret.className="desktop-preview-text-caret";
+    caret.setAttribute("aria-hidden","true");
+    parent.appendChild(caret);
+    return caret;
+  }
+
+  function ensureMirror(){
+    const preview=document.getElementById("preview");
+    if(!preview || !desktop()) return null;
+    if(mirror) return mirror;
+    mirror=document.createElement("div");
+    mirror.setAttribute("aria-hidden","true");
+    mirror.style.cssText=
+      "position:absolute;visibility:hidden;pointer-events:none;" +
+      "white-space:pre-wrap;overflow-wrap:break-word;word-break:break-word;" +
+      "left:-100000px;top:0;";
+    document.body.appendChild(mirror);
+    return mirror;
+  }
+
+  function syncMirror(preview){
+    const m=ensureMirror();
+    if(!m) return null;
+    const cs=getComputedStyle(preview);
+    const props=[
+      "font","fontFamily","fontSize","fontWeight","fontStyle","lineHeight",
+      "letterSpacing","textTransform","textIndent","wordSpacing","whiteSpace",
+      "paddingTop","paddingRight","paddingBottom","paddingLeft",
+      "borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth",
+      "boxSizing"
+    ];
+    props.forEach(k=>m.style[k]=cs[k]);
+    m.style.width=preview.clientWidth+"px";
+    m.style.minHeight=preview.clientHeight+"px";
+    m.textContent=preview.value;
+    return m;
+  }
+
+  function findInsertion(field){
+    const preview=document.getElementById("preview");
+    if(!preview || !field) return -1;
+    const label=FIELD_LABELS[field.id];
+    if(!label) return -1;
+
+    const text=preview.value;
+    const start=text.indexOf(label);
+    if(start<0) return -1;
+
+    const colon=start+label.length-1;
+    let pos=colon+1;
+    if(text[pos]===" ") pos++;
+
+    const value=field.value ?? "";
+    return Math.min(text.length,pos+value.length);
+  }
+
+  function placeCaret(){
+    if(!desktop() || !activeField) return;
+
+    const preview=document.getElementById("preview");
+    const c=ensureCaret();
+    const m=syncMirror(preview);
+
+    if(!preview || !c || !m) return;
+
+    const index=findInsertion(activeField);
+    if(index<0){
+      c.style.display="none";
+      return;
+    }
+
+    const node=m.firstChild;
+    if(!node){
+      c.style.display="none";
+      return;
+    }
+
+    const range=document.createRange();
+    range.setStart(node,index);
+    range.setEnd(node,index);
+
+    const rr=range.getBoundingClientRect();
+    const mr=m.getBoundingClientRect();
+    const pr=preview.getBoundingClientRect();
+    const parentRect=preview.parentElement.getBoundingClientRect();
+
+    const x=(rr.left-mr.left)+(pr.left-parentRect.left);
+    const y=(rr.top-mr.top)+(pr.top-parentRect.top);
+
+    let caretHeight=Math.max(1,rr.height);
+
+    const label=FIELD_LABELS[activeField.id] || "";
+    const labelStart=m.textContent.indexOf(label);
+    const colonIndex=labelStart>=0 ? labelStart+label.length-1 : -1;
+
+    if(colonIndex>=0){
+      const colonRange=document.createRange();
+      colonRange.setStart(node,colonIndex);
+      colonRange.setEnd(node,colonIndex+1);
+      const colonRect=colonRange.getBoundingClientRect();
+      if(colonRect.height>0) caretHeight=colonRect.height;
+    }
+
+    c.style.display="block";
+    c.style.left=x+"px";
+    c.style.top=y+"px";
+    c.style.height=(caretHeight*0.82)+"px";
+    c.style.width="1.5px";
+  }
+
+  function activate(field){
+    activeField=field;
+    requestAnimationFrame(()=>requestAnimationFrame(placeCaret));
+  }
+
+  function hide(){
+    if(caret) caret.style.display="none";
+    activeField=null;
+  }
+
+  document.addEventListener("focusin",e=>{
+    if(!desktop()) return;
+    const el=e.target;
+    if(el && el.matches("input,textarea,select") && el.id!=="preview"){
+      activate(el);
+    }
+  });
+
+  document.addEventListener("input",e=>{
+    if(!desktop()) return;
+    const el=e.target;
+    if(el && el.matches("input,textarea,select") && el.id!=="preview"){
+      activeField=el;
+      requestAnimationFrame(()=>requestAnimationFrame(placeCaret));
+    }
+  });
+
+  window.addEventListener("resize",()=>{
+    if(desktop() && activeField) requestAnimationFrame(placeCaret);
+    else hide();
+  });
+
+  window.addEventListener("orientationchange",()=>{
+    setTimeout(()=>{
+      if(desktop() && activeField) placeCaret();
+    },80);
+  });
+
+  const oldBuild=window.build;
+  if(typeof oldBuild==="function"){
+    window.build=function(){
+      const result=oldBuild.apply(this,arguments);
+      if(desktop() && activeField){
+        requestAnimationFrame(()=>requestAnimationFrame(placeCaret));
+      }
+      return result;
+    };
+  }
+})();
+</script>
+
+
+
+
+
+
+<script>
+(function preserveClearView(){
+  const btn = document.getElementById("clear");
+  if (!btn) return;
+
+  let savedScrollX = 0;
+  let savedScrollY = 0;
+  let savedFocus = null;
+
+  btn.addEventListener("pointerdown", function(e){
+    savedScrollX = window.scrollX;
+    savedScrollY = window.scrollY;
+    savedFocus = document.activeElement;
+    e.preventDefault();
+  }, true);
+
+  btn.addEventListener("click", function(){
+    requestAnimationFrame(function(){
+      window.scrollTo(savedScrollX, savedScrollY);
+
+      if (savedFocus && document.contains(savedFocus)) {
+        savedFocus.focus({preventScroll:true});
+      }
+    });
+  }, false);
+})();
+</script>
+
+
+
+<script id="universal-enter-navigation-fix">
+/*
+ * ENTER V15 — destino determinado pelo CAMPO, não pela aba.
+ *
+ * Exílio e Revogação têm campos próprios. Os IDs exclusivos dessas
+ * categorias são usados diretamente; o campo "nick" compartilhado
+ * é identificado pelo modo exilio-mode.
+ */
+(function(){
+  const FIELD=
+    '#fields input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"]),#fields textarea,#fields select';
+
+  const COMMON={
+    responsavel:"funcao",funcao:"individuo",individuo:"nick",
+    nick:"id",id:"motivo",motivo:"obs"
+  };
+
+  const REBAIXAMENTO={
+    responsavel:"funcao",
+    funcao:"individuo",
+    individuo:"nick",
+    nick:"id",
+    id:"motivo",
+    motivo:"antiga",
+    antiga:"nova",
+    nova:"obs"
+  };
+
+  const EXILIO={
+    responsavel:"funcao",
+    funcao:"solicitante",
+    solicitante:"nick",
+    nick:"nickDiscord",
+    nickDiscord:"idDiscord",
+    idDiscord:"motivo",
+    motivo:"provas"
+  };
+
+  const REVOGACAO={
+    responsavelRevogacao:"solicitanteRevogacao",
+    solicitanteRevogacao:"autorizacao",
+    autorizacao:"nickRevogar",
+    nickRevogar:"patentePerdida",
+    patentePerdida:"motivoRevogacao",
+    motivoRevogacao:"comprovRevogacao"
+  };
+
+  const ENTREGAR={
+    atendente:"solicitantePatente",
+    solicitantePatente:"autorizacao",
+    autorizacao:"nickIndividuo",
+    nickIndividuo:"patenteEntregar",
+    patenteEntregar:"tempoInatividade",
+    tempoInatividade:"comprovJust"
+  };
+
+  const TREINO={
+    responsavelTreino:"nickInstrutor",
+    nickInstrutor:"nickMilitar",
+    nickMilitar:"patenteEntregue",
+    patenteEntregue:"comprovJust"
+  };
+
+  function field(el){
+    return !!(el && el.id && el.matches(FIELD));
+  }
+
+  function nextId(el){
+    const fields=document.getElementById("fields");
+    const active=document.querySelector(".tabs .tab.active[data-model]");
+    const model=active ? active.getAttribute("data-model") : "";
+
+    // Cada modelo antigo também tem uma sequência própria.
+    // Isto evita que o rebaixamento caia no mapa da advertência.
+    if(model==="rebaixamento") return REBAIXAMENTO[el.id] || null;
+
+    // O próprio container é a fonte da verdade para Exílio.
+    if(fields && fields.classList.contains("exilio-mode")){
+      return EXILIO[el.id] || null;
+    }
+
+    if(REVOGACAO[el.id]) return REVOGACAO[el.id];
+    if(ENTREGAR[el.id]) return ENTREGAR[el.id];
+    if(TREINO[el.id]) return TREINO[el.id];
+
+    return COMMON[el.id] || null;
+  }
+
+  function go(el){
+    const id=nextId(el);
+    if(!id) return;
+
+    const next=document.getElementById(id);
+    if(!field(next) || next.disabled) return;
+
+    next.focus();
+
+    if(typeof next.setSelectionRange==="function"){
+      try{
+        const p=(next.value||"").length;
+        next.setSelectionRange(p,p);
+      }catch(_){}
+    }
+  }
+
+  document.addEventListener("keydown",function(e){
+    if(e.key!=="Enter" || e.shiftKey || !field(e.target)) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+
+    go(e.target);
+  },true);
+})();
+</script>
+
+
+
+<script>
+/* Seta da área de preenchimento: muda para a próxima categoria. */
+(function initFillCategoryArrow(){
+  const arrow=document.getElementById("fillCategoryArrow");
+  if(!arrow) return;
+
+  arrow.addEventListener("click",function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    const tabs=Array.from(document.querySelectorAll(".tabs .tab[data-model]"));
+    if(!tabs.length) return;
+
+    const activeIndex=tabs.findIndex(tab=>tab.classList.contains("active"));
+    const nextIndex=activeIndex < 0 ? 0 : (activeIndex + 1) % tabs.length;
+    tabs[nextIndex].click();
+
+    // Não mantém o foco na seta nem abre o teclado no celular.
+    arrow.blur();
+  });
+})();
+</script>
 
 </body>
 </html>
