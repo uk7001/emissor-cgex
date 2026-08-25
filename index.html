@@ -18,7 +18,6 @@
 .fields.exilio-mode .field:has(#nickDiscord){order:5}
 .fields.exilio-mode .field:has(#idDiscord){order:6}
 .fields.exilio-mode .field:has(#motivo){order:7}
-.fields.exilio-mode .field:has(#provas){order:9}
 .fields.exilio-mode .field:has(#obs),.fields.exilio-mode .field:has(#antiga),.fields.exilio-mode .field:has(#nova){display:none!important}
 .fields.exilio-mode .field:has(#responsavel){order:1}
 .fields.exilio-mode .field:has(#funcao){order:2}
@@ -375,9 +374,6 @@ select:active,
 }
 .fill-category-prev{right:34px;}
 /* SOLICITAÇÃO DE REVOGAÇÃO — remove somente a área de preenchimento "Comprovações". */
-#comprovRevogacaoWrap{
-  display:none!important;
-}
 </style>
 
 <style id="desktop-layout-fix">
@@ -459,7 +455,6 @@ select:active,
     <div class="field" id="antigaWrap" style="display:none"><label>Antiga Função:</label><input id="antiga" placeholder="Função anterior"></div>
     <div class="field" id="novaWrap" style="display:none"><label>Nova função:</label><input id="nova" placeholder="Nova função"></div>
     <div class="field full"><label>Observações:</label><textarea id="obs" placeholder="N/A."></textarea></div>
-    <div class="field full" id="provasWrap"><label>Comprovações:</label><textarea id="provas" placeholder=""></textarea></div>
     <div class="field" id="nickDiscordWrap" style="display:none"><label>Nick Discord:</label><input id="nickDiscord" placeholder="N/A."></div>
     <div class="field" id="idDiscordWrap" style="display:none"><label>ID Discord:</label><input id="idDiscord" placeholder="N/A."></div>
     <div class="field full newmodel-field" id="atendenteWrap" style="display:none"><label>Atendente:</label><input id="atendente" value="@"></div>
@@ -478,7 +473,6 @@ select:active,
     <div class="field full newmodel-field" id="nickRevogarWrap" style="display:none"><label>Nick do indivíduo a ser revogado:</label><input id="nickRevogar"></div>
     <div class="field full newmodel-field" id="patentePerdidaWrap" style="display:none"><label>Patente perdida:</label><input id="patentePerdida"></div>
     <div class="field full newmodel-field" id="motivoRevogacaoWrap" style="display:none"><label>Motivo:</label><textarea id="motivoRevogacao"></textarea></div>
-    <div class="field full newmodel-field" id="comprovRevogacaoWrap" style="display:none"><label>Comprovações:</label><textarea id="comprovRevogacao" placeholder=""></textarea></div>
   </div>
   
 </section>
@@ -486,7 +480,7 @@ select:active,
 <section class="card">
   <h2>Pré-visualização</h2><div class="sub"></div>
   <textarea class="preview" id="preview" readonly spellcheck="false"></textarea>
-  <div class="actions"><button class="btn primary" id="copy">Copiar documento</button><button class="btn secondary" id="clear">Limpar</button></div><div class="hint date-hint">A data e a hora são inseridas automaticamente no momento da geração.</div>
+  <div class="actions"><button class="btn primary" id="copy" type="button">Copiar documento</button><button class="btn secondary" id="clear" type="button">Limpar</button></div><div id="actionNotice" class="copy-notice" aria-live="polite"></div><div class="hint date-hint">A data e a hora são inseridas automaticamente no momento da geração.</div>
 </section>
 </div>
 
@@ -751,7 +745,7 @@ function build(){
 • | Observações: ${o}
 ♤ ——————————————— ♤
 • | Data/Hora: ${d}
-• | Comprovações: ${p} **`;
+• | Comprovações: ${p} **`
   }else if(model==="rebaixamento"){
     text=`**《 REBAIXAMENTO 》
 ♤ ——————————————— ♤
@@ -769,7 +763,7 @@ function build(){
 • | Observações: ${o}
  ♤—————————————— ♤
 • | Data/Hora: ${d}
-• | Comprovações: ${p} **`;
+• | Comprovações: ${p} **`
   }else if(model==="exilio"){
     text=`**## :CGEx: SOLICITAÇÃO DE EXÍLIO :CGEx: 
 ———————————————
@@ -828,18 +822,14 @@ function build(){
 
 <:interrogao:1479903773479538918> Motivo: ${val("motivoRevogacao")}
 
-📎 Comprovações: ${val("comprovRevogacao")}**`;
+📎 Comprovações: ${$("comprovRevogacao")?val("comprovRevogacao"):""}**`;
   }
   $("preview").value=text;
   resizePreview();
   requestAnimationFrame(resizePreview);
 }
-function updateComprovacoesField(){
-  const wrap=$("provasWrap");
-  if(!wrap) return;
-  const hide=["advertencia","rebaixamento","exilio","revogacao"].includes(model);
-  wrap.style.display=hide ? "none" : "block";
-}
+function updateComprovacoesField(){}
+updateComprovacoesField();
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   const preview=$("preview");
   if(preview){
@@ -867,7 +857,7 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   $("antigaWrap").style.display=rebaix?"block":"none";$("novaWrap").style.display=rebaix?"block":"none";
   $("individuoWrap").style.display=exilio?"none":"block"; $("idWrap").style.display=exilio?"none":"block";
   $("solicitanteWrap").style.display=exilio?"block":"none";$("nickDiscordWrap").style.display=exilio?"block":"none";$("idDiscordWrap").style.display=exilio?"block":"none";
-  const ids=["atendenteWrap","solicitantePatenteWrap","solicitanteRevogacaoWrap","autorizacaoWrap","nickIndividuoWrap","patenteEntregarWrap","tempoInatividadeWrap","comprovJustWrap","responsavelTreinoWrap","responsavelRevogacaoWrap","nickInstrutorWrap","nickMilitarWrap","patenteEntregueWrap","nickRevogarWrap","patentePerdidaWrap","motivoRevogacaoWrap","comprovRevogacaoWrap"];
+  const ids=["atendenteWrap","solicitantePatenteWrap","solicitanteRevogacaoWrap","autorizacaoWrap","nickIndividuoWrap","patenteEntregarWrap","tempoInatividadeWrap","comprovJustWrap","responsavelTreinoWrap","responsavelRevogacaoWrap","nickInstrutorWrap","nickMilitarWrap","patenteEntregueWrap","nickRevogarWrap","patentePerdidaWrap","motivoRevogacaoWrap",];
   ids.forEach(id=>{ const el=$(id); el.style.display="none"; el.style.order="0"; });
   if(model==="entregar"){
     ["atendenteWrap","solicitantePatenteWrap","autorizacaoWrap","nickIndividuoWrap","patenteEntregarWrap","tempoInatividadeWrap","comprovJustWrap"]
@@ -878,7 +868,7 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
       .forEach((id,index)=>{ $(id).style.display="block"; $(id).style.order=String(index+1); });
   }
   if(model==="revogacao"){
-    ["responsavelRevogacaoWrap","solicitanteRevogacaoWrap","autorizacaoWrap","nickRevogarWrap","patentePerdidaWrap","motivoRevogacaoWrap","comprovRevogacaoWrap"]
+    ["responsavelRevogacaoWrap","solicitanteRevogacaoWrap","autorizacaoWrap","nickRevogarWrap","patentePerdidaWrap","motivoRevogacaoWrap",]
       .forEach((id,index)=>{ $(id).style.display="block"; $(id).style.order=String(index+1); });
   }
   updateComprovacoesField();
@@ -956,10 +946,10 @@ const sharedFieldIds=new Set([
 const categoryFields={
   advertencia:["individuo","nick","id","motivo","obs"],
   rebaixamento:["individuo","nick","id","motivo","antiga","nova","obs"],
-  exilio:["nick","nickDiscord","idDiscord","motivo","provas"],
+  exilio:["nick","nickDiscord","idDiscord","motivo"],
   entregar:["autorizacao","nickIndividuo","patenteEntregar","tempoInatividade","comprovJust"],
   treino:["nickInstrutor","nickMilitar","patenteEntregue","comprovJust"],
-  revogacao:["autorizacao","nickRevogar","patentePerdida","motivoRevogacao","comprovRevogacao"]
+  revogacao:["autorizacao","nickRevogar","patentePerdida","motivoRevogacao"]
 };
 
 // Solicitante é compartilhado na lógica de preenchimento, mas cada categoria
@@ -1089,6 +1079,17 @@ camposArrobaFixos.forEach(id=>protegerArroba($(id)));
 })();
 
 
+// Atualização contínua da pré-visualização: qualquer alteração em um campo
+// deve reconstruir o conteúdo imediatamente, sem depender do Enter.
+document.addEventListener("input", e=>{
+  const el=e.target;
+  if(el && el.matches("#fields input, #fields textarea, #fields select")){
+    requestAnimationFrame(()=>{
+      try{ build(); }catch(_){}
+    });
+  }
+});
+
 // Proteção adicional contra estados intermediários do navegador: se um @
 // for removido e o evento input chegar antes de qualquer outra rotina, ele
 // volta imediatamente e nunca fica persistido sem o caractere.
@@ -1123,7 +1124,7 @@ document.addEventListener("input", e=>{
     responsavel:"Responsável:", funcao:"Função:", individuo:"Indivíduo(s):",
     solicitante:"Solicitante:", nick:"Nick do Roblox:", id:"ID:",
     motivo:"Motivo(s):", antiga:"Antiga Função:", nova:"Nova Função:",
-    obs:"Observações:", provas:"Comprovações:", nickDiscord:"Nick Discord:",
+    obs:"Observações:", nickDiscord:"Nick Discord:",
     idDiscord:"ID Discord:", atendente:"Atendente:",
     solicitantePatente:"Solicitante:", autorizacao:"Autorização:",
     nickIndividuo:"Nick do indivíduo:", patenteEntregar:"Patente a entregar:",
@@ -1132,7 +1133,7 @@ document.addEventListener("input", e=>{
     nickMilitar:"Nick do militar aprovado:", patenteEntregue:"Patente entregue:",
     responsavelRevogacao:"Responsável:", solicitanteRevogacao:"Solicitante:",
     nickRevogar:"Nick do indivíduo a ser revogado:", patentePerdida:"Patente perdida:",
-    motivoRevogacao:"Motivo:", comprovRevogacao:"Comprovações:"
+    motivoRevogacao:"Motivo:"
   };
 
   let activeField=null;
@@ -1381,7 +1382,6 @@ document.addEventListener("input", e=>{
     nick:"nickDiscord",
     nickDiscord:"idDiscord",
     idDiscord:"motivo",
-    motivo:"provas"
   };
 
   const REVOGACAO={
@@ -1390,7 +1390,6 @@ document.addEventListener("input", e=>{
     autorizacao:"nickRevogar",
     nickRevogar:"patentePerdida",
     patentePerdida:"motivoRevogacao",
-    motivoRevogacao:"comprovRevogacao"
   };
 
   const ENTREGAR={
@@ -1460,6 +1459,18 @@ document.addEventListener("input", e=>{
 
     go(e.target);
   },true);
+
+  // Ao colar conteúdo em qualquer área de preenchimento, avança para o campo seguinte.
+  // O avanço ocorre depois que o navegador conclui a colagem, preservando o conteúdo colado.
+  document.addEventListener("paste",function(e){
+    const target=e.target;
+    if(!field(target) || target.disabled || target.readOnly) return;
+    const advance=()=>{
+      if(document.activeElement===target) go(target);
+    };
+    requestAnimationFrame(()=>requestAnimationFrame(advance));
+    setTimeout(advance,30);
+  },true);
 })();
 </script>
 
@@ -1516,6 +1527,125 @@ document.addEventListener("input", e=>{
     tab.addEventListener("click",()=>requestAnimationFrame(updateArrows));
   });
   updateArrows();
+})();
+</script>
+
+<script id="numeric-id-fields-fix">
+(function(){
+  const numericIds = ["id", "idDiscord"];
+  function enforceNumeric(field){
+    if(!field) return;
+    field.setAttribute("inputmode","numeric");
+    field.setAttribute("pattern","[0-9]*");
+    field.addEventListener("input", function(){
+      const old = this.value;
+      const pos = this.selectionStart ?? old.length;
+      const before = old.slice(0,pos);
+      const cleaned = old.replace(/[^0-9]/g, "");
+      const removedBefore = (before.match(/[^0-9]/g)||[]).length;
+      if(cleaned !== old){
+        this.value = cleaned;
+        const newPos = Math.max(0, pos - removedBefore);
+        try{ this.setSelectionRange(newPos,newPos); }catch(e){}
+      }
+      if(typeof build === "function") build();
+    }, true);
+    field.addEventListener("paste", function(){
+      setTimeout(()=>{
+        this.value = String(this.value||"").replace(/[^0-9]/g,"");
+        if(typeof build === "function") build();
+      },0);
+    }, true);
+  }
+  numericIds.forEach(id=>enforceNumeric(document.getElementById(id)));
+})();
+</script>
+<script id="copy-clear-fix">
+(function(){
+  const copyBtn=document.getElementById("copy");
+  const clearBtn=document.getElementById("clear");
+  const preview=document.getElementById("preview");
+  const notice=document.getElementById("actionNotice");
+  let noticeTimer=null;
+
+  function notify(text, kind="copy"){
+    if(!notice) return;
+    notice.textContent=text;
+    notice.classList.add("show");
+    notice.style.borderColor = kind === "clear" ? "rgba(180,180,180,.45)" : "rgba(75,180,125,.42)";
+    notice.style.background = kind === "clear" ? "rgba(80,80,80,.25)" : "rgba(36,120,78,.22)";
+    notice.style.color = kind === "clear" ? "#d0d0d0" : "#9be2ba";
+    clearTimeout(noticeTimer);
+    noticeTimer=setTimeout(()=>notice.classList.remove("show"),1600);
+  }
+
+  function fallbackCopy(text){
+    const ta=document.createElement("textarea");
+    ta.value=text;
+    ta.setAttribute("readonly","");
+    ta.style.position="fixed";
+    ta.style.left="-9999px";
+    ta.style.top="0";
+    ta.style.opacity="0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0,ta.value.length);
+    let ok=false;
+    try{ ok=document.execCommand("copy"); }catch(_){ ok=false; }
+    ta.remove();
+    return ok;
+  }
+
+  if(copyBtn && preview){
+    copyBtn.addEventListener("click", function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      const text=String(preview.value||"");
+      if(!text) return;
+
+      // Em arquivo local/mobile, clipboard.writeText pode ser bloqueado.
+      // Por isso a cópia usa primeiro o método nativo e depois um fallback real.
+      if(navigator.clipboard && typeof navigator.clipboard.writeText === "function"){
+        navigator.clipboard.writeText(text).then(()=>{
+          preview.classList.add("copying-preview");
+          setTimeout(()=>preview.classList.remove("copying-preview"),450);
+        }).catch(()=>{
+          if(fallbackCopy(text)){
+            preview.classList.add("copying-preview");
+            setTimeout(()=>preview.classList.remove("copying-preview"),450);
+            }
+        });
+      }else if(fallbackCopy(text)){
+        preview.classList.add("copying-preview");
+        setTimeout(()=>preview.classList.remove("copying-preview"),450);
+      }
+    });
+  }
+
+  if(clearBtn){
+    clearBtn.addEventListener("click",function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      const ids=(typeof getCategoryFieldIds === "function") ? getCategoryFieldIds() : [];
+      ids.forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.value="";
+      });
+      // Função também faz parte do preenchimento e deve ser apagada pelo botão Limpar.
+      const funcaoEl=document.getElementById("funcao");
+      if(funcaoEl) funcaoEl.value="";
+      if(typeof categorySolicitanteId !== "undefined" && typeof model !== "undefined"){
+        const sid=categorySolicitanteId[model];
+        if(sid){ const el=document.getElementById(sid); if(el) el.value="@"; }
+      }
+      if(typeof categoryFieldState !== "undefined" && typeof model !== "undefined") categoryFieldState[model]={};
+      if(typeof build === "function") build();
+      if(typeof saveFormAutomatically === "function") saveFormAutomatically();
+      preview?.classList.add("clearing-preview");
+      setTimeout(()=>preview?.classList.remove("clearing-preview"),450);
+    });
+  }
 })();
 </script>
 
