@@ -1652,62 +1652,37 @@ document.addEventListener("input", e=>{
     go(e.target);
   },true);
 
-  // AVANÇO POR INSERÇÃO: somente quando MAIS DE 3 CARACTERES forem
-  // inseridos de uma vez e o valor já estiver atualizado no campo.
-  // Apagar, digitar menos de 4 caracteres ou alterações sem inserção
-  // suficiente não movimentam o cursor.
-  document.addEventListener("input",function(e){
-    const target=e.target;
-    if(!field(target) || target.disabled || target.readOnly) return;
-
-    const type=String(e.inputType||"");
-    if(type.indexOf("insert") !== 0) return;
-
-    const valueAfter=String(target.value||"");
-    const data=String(e.data || "");
-
-    // Para colagem/inserção móvel, e.data normalmente contém o texto
-    // inserido. Em alguns navegadores ele pode vir vazio; nesse caso
-    // usamos a diferença entre o valor anterior e o atual.
-    const before=target.__valorAntesInput;
-    let insertedCount=data.length;
-    if(!insertedCount && typeof before === "string" && valueAfter.length >= before.length){
-      insertedCount=Math.max(0,valueAfter.length-before.length);
-    }
-
-    target.__valorAntesInput=valueAfter;
-
-    if(insertedCount <= 3) return;
-
-    // Garante que o navegador concluiu a atualização antes da transição.
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        if(String(target.value||"") !== valueAfter) return;
-        if(document.activeElement!==target) return;
-
-        const id=nextId(target);
-        const next=document.getElementById(id);
-        if(!field(next) || next.disabled) return;
-
-        // Transição suave: desfoca o campo atual e posiciona o cursor
-        // no próximo campo sem salto visual.
-        target.style.transition="opacity .12s ease";
-        target.style.opacity=".92";
-        setTimeout(()=>{
-          target.style.opacity="";
-          next.focus({preventScroll:true});
-          if(typeof next.setSelectionRange==="function"){
-            try{ const p=(next.value||"").length; next.setSelectionRange(p,p); }catch(_){}
-          }
-        },120);
-      });
-    });
-  },true);
-
-  // Guarda o valor atual para que navegadores móveis que não fornecem
-  // e.data ainda permitam medir quantos caracteres foram inseridos.
+  /*
+   * REGRA DE INSERÇÃO INSTANTÂNEA:
+   * - Digitação normal, inclusive scanner caractere a caractere: permanece no campo.
+   * - Se o valor aumentar em 4+ caracteres em um único evento de input,
+   *   a inserção é considerada instantânea (ex.: colagem) e avança.
+   * - Portanto, o 4º caractere de uma sequência digitada não dispara a regra,
+   *   pois cada input acrescenta somente 1 caractere.
+   */
   document.addEventListener("focusin",function(e){
     if(field(e.target)) e.target.__valorAntesInput=String(e.target.value||"");
+  },true);
+
+  document.addEventListener("input",function(e){
+    const el=e.target;
+    if(!field(el)) return;
+
+    const before=String(el.__valorAntesInput ?? "");
+    const after=String(el.value ?? "");
+    const delta=Math.max(0, after.length-before.length);
+
+    // 4+ caracteres inseridos em um único evento = inserção instantânea/colagem.
+    if(delta>=4){
+      if(el.__avancoPorInsercaoInstantanea) return;
+      el.__avancoPorInsercaoInstantanea=true;
+      requestAnimationFrame(function(){
+        el.__avancoPorInsercaoInstantanea=false;
+        go(el);
+      });
+    }
+
+    el.__valorAntesInput=after;
   },true);
 })();
 </script>
