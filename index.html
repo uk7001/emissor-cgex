@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<base target="_self">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Emissor de Documentos da Corregedoria</title>
@@ -1969,17 +1968,6 @@ document.addEventListener("input", e=>{
 
 
 
-
-<script id="open-links-in-chrome">
-(function(){
- document.addEventListener("click",function(e){
-  const a=e.target.closest&&e.target.closest("a[href]");
-  if(!a) return;
-  const h=a.href||"";
-  if(/^https?:\/\//i.test(h)){a.removeAttribute("target");a.removeAttribute("rel");}
- },true);
-})();
-</script>
 </body>
 </html>
 <script id="persist-page-position">
