@@ -932,7 +932,11 @@ if(document.readyState === "loading"){
 
 function build(){
   const r=val("responsavel")||"@", f=val("funcao")||"Corregedoria.",
-  i=(val("individuo").replace(/<@\s*>/g, "").trim()) || "N/A.", n=val("nick"), id=val("id")||"N/A.", m=val("motivo"),
+  i=(function(){
+    const raw=val("individuo").trim();
+    const ids=(raw.match(/<@\s*\d+\s*>/g)||[]);
+    return ids.length ? raw : "N/A.";
+  })(), n=val("nick"), id=val("id")||"N/A.", m=val("motivo"),
   o=val("obs")||"N/A.", p=$("provas")?val("provas"):"", d=now();
   let text;
   if(model==="advertencia"){
@@ -1060,6 +1064,31 @@ function build(){
 
 function updateComprovacoesField(){}
 updateComprovacoesField();
+(function keepIndividuoNAOnCategorySwitch(){
+  function restore(){
+    const el=document.getElementById("individuo");
+    if(!el) return;
+    const raw=String(el.value||"").trim();
+    const hasAnyToken=/<@\s*\d*\s*>/.test(raw);
+    if(!hasAnyToken){
+      el.value="";
+      el.placeholder="N/A.";
+    }else{
+      el.placeholder="";
+    }
+  }
+  document.addEventListener("DOMContentLoaded",restore);
+  document.addEventListener("change",function(e){
+    if(e.target && (e.target.id==="quantidadeIndividuos" || e.target.closest(".tab"))){
+      setTimeout(restore,0);
+    }
+  },true);
+  document.addEventListener("click",function(e){
+    if(e.target && e.target.closest(".tab")) setTimeout(restore,0);
+  },true);
+  window.__restoreIndividuoNA=restore;
+})();
+
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   const preview=$("preview");
   if(preview){
@@ -2102,9 +2131,6 @@ document.addEventListener("input", e=>{
   function format(ids){
     const out=(ids||[]).slice(0,MAX);
     while(out.length<count()) out.push("");
-    // Sem IDs digitados, não criar tokens <@>. O placeholder visual
-    // já mostra <@> no campo e a pré-visualização usa N/A.
-    if(out.every(id=>!String(id||"").replace(/\D/g,""))) return "";
     return out.slice(0,count()).map(id=>{
       const digits=String(id||"").replace(/\D/g,"");
       return PREFIX+digits+SUFFIX;
@@ -2139,9 +2165,18 @@ document.addEventListener("input", e=>{
     return rs[rs.length-1].digitEnd;
   }
 
+  function setEmptyPlaceholder(el){
+    if(!el) return;
+    const raw=String(el.value||"");
+    const ids=idsFromValue(raw);
+    const hasAnyToken=/<@\s*\d*\s*>/.test(raw);
+    el.placeholder=hasAnyToken ? "" : "N/A.";
+  }
+
   function write(ids, caret){
     const el=getField(); if(!el) return;
     el.value=format(ids);
+    setEmptyPlaceholder(el);
     const p=clampCaret(el,caret==null?el.value.length:caret);
     try{el.setSelectionRange(p,p);}catch(_){ }
     if(typeof window.build==="function") window.build();
@@ -2214,6 +2249,7 @@ document.addEventListener("input", e=>{
     const old=el.value||"", pos=el.selectionStart??old.length, rs=ranges(old);
     if(!old.trim()){
       el.value="";
+      setEmptyPlaceholder(el);
       try{el.setSelectionRange(0,0);}catch(_){}
       if(typeof window.build==="function") window.build();
       return;
@@ -2231,22 +2267,27 @@ document.addEventListener("input", e=>{
 
   function syncQuantity(){
     const el=getField(); if(!el) return;
-    if(!String(el.value||"").trim()){
-      el.value="";
-      try{el.setSelectionRange(0,0);}catch(_){}
-      if(typeof window.build==="function") window.build();
-      return;
-    }
-    const ids=idsFromValue(el.value); const old=el.selectionStart??0;
+
+    // Preserve any real IDs already entered, then fill the remaining
+    // selected slots with visible <@> tokens.
+    const ids=idsFromValue(el.value);
+    while(ids.length<count()) ids.push("");
+
     el.value=format(ids);
-    const rs=ranges(el.value), r=rs[Math.min(rs.length-1,Math.max(0,tokenAt(el.value,old)))];
-    const p=r?.digitStart||0;
-    try{el.setSelectionRange(p,p);}catch(_){ }
+    el.placeholder="";
+
+    const rs=ranges(el.value);
+    const p=rs[0]?.digitStart||2;
+    try{el.focus();el.setSelectionRange(p,p);}catch(_){}
+
     if(typeof window.build==="function") window.build();
   }
 
   const q=getQty();
-  if(q) q.addEventListener("change",syncQuantity,true);
+  if(q) {
+    q.addEventListener("change",syncQuantity,true);
+    q.addEventListener("input",syncQuantity,true);
+  }
 
   document.addEventListener("keydown",function(e){
     const el=getField(); if(!el || e.target!==el) return;
@@ -2292,14 +2333,20 @@ document.addEventListener("input", e=>{
     });
   },true);
 
-  // Garante o formato inicial com espaço entre os indivíduos.
+  // Inicialmente o campo deve permanecer vazio para exibir N/A. como placeholder.
+// Os <@> só são criados quando o usuário selecionar/trocar a quantidade
+// ou quando já existir algum ID salvo.
   requestAnimationFrame(()=>{const el=getField(); if(el){
-    /* Estado inicial vazio: <@> é apenas placeholder, não valor real. */
-    if(!String(el.value||"").replace(/<@>/g,"").trim()){
-      el.value="";
-      try{el.setSelectionRange(0,0);}catch(_){}
+    const raw=String(el.value||"").trim();
+    const ids=idsFromValue(raw);
+    const hasRealId=ids.some(id=>String(id||"").replace(/\D/g,"").length>0);
+    if(hasRealId){
+      el.value=format(ids);
+      const rs=ranges(el.value);
+      try{el.setSelectionRange(rs[0]?.digitStart||2,rs[0]?.digitStart||2);}catch(_){}
     }else{
-      el.value=format(idsFromValue(el.value));
+      el.value="";
+      el.placeholder="N/A.";
     }
     if(typeof window.build==="function") window.build();
   }});
@@ -2318,8 +2365,14 @@ document.addEventListener("input", e=>{
   function fix(){
     const el=document.getElementById("individuo");
     if(!el) return;
-    const empty=!String(el.value||"").trim();
-    el.placeholder=empty ? "N/A." : "";
+    const raw=String(el.value||"").trim();
+    const hasAnyToken=/<@\s*\d*\s*>/.test(raw);
+    if(!hasAnyToken){
+      el.value="";
+      el.placeholder="N/A.";
+    }else{
+      el.placeholder="";
+    }
     if(typeof window.build==="function") window.build();
   }
   document.addEventListener("input", e=>{ if(e.target && e.target.id==="individuo") fix(); }, true);
@@ -2327,6 +2380,56 @@ document.addEventListener("input", e=>{
   requestAnimationFrame(fix);
 })();
 </script>
+
+<script id="placeholder-na-persistence-fix">
+(function(){
+  function restoreNAPlaceholders(){
+    const fields=document.querySelector("#fields");
+    if(!fields) return;
+
+    fields.querySelectorAll("input, textarea").forEach(function(el){
+      if(el.id==="individuo") return;
+
+      // Nunca sobrescreve um placeholder específico já definido pelo campo.
+      // Se o campo estiver vazio e sem placeholder, usa N/A.
+      if(!String(el.value||"").trim() && !String(el.placeholder||"").trim()){
+        el.placeholder="N/A.";
+      }
+    });
+
+    const individuo=document.querySelector("#individuo");
+    if(individuo && !String(individuo.value||"").trim()){
+      individuo.placeholder="N/A.";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded",restoreNAPlaceholders);
+
+  // A troca de categoria/quantidade pode reconstruir os campos.
+  // Observa somente alterações de estrutura dentro de #fields.
+  const observer=new MutationObserver(function(){
+    restoreNAPlaceholders();
+  });
+
+  function start(){
+    const fields=document.querySelector("#fields");
+    if(fields) observer.observe(fields,{childList:true,subtree:true});
+    restoreNAPlaceholders();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",start,{once:true});
+  }else{
+    start();
+  }
+
+  // Também corrige após mudanças de seleção sem interferir na mecânica.
+  document.addEventListener("change",function(){
+    setTimeout(restoreNAPlaceholders,0);
+  },true);
+})();
+</script>
+
 </body>
 </html>
 <script id="persist-page-position">
