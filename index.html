@@ -2384,26 +2384,9 @@ document.addEventListener("input", e=>{
 <script id="placeholder-na-persistence-fix">
 (function(){
   function restoreNAPlaceholders(){
-    const fields=document.querySelector("#fields");
-    if(!fields) return;
-
-    fields.querySelectorAll("input, textarea").forEach(function(el){
-      if(el.id==="individuo") return;
-
-      // Nunca sobrescreve um placeholder específico já definido pelo campo.
-      // Se o campo estiver vazio e sem placeholder, usa N/A.
-      if(!String(el.value||"").trim() && !String(el.placeholder||"").trim()){
-        el.placeholder="N/A.";
-      }
-    });
-
-    const individuo=document.querySelector("#individuo");
-    if(individuo && !String(individuo.value||"").trim()){
-      individuo.placeholder="N/A.";
-    }
+    // Intencionalmente vazio: apenas os campos cujo modelo de pré-visualização
+    // contém N/A. devem exibir esse placeholder no preenchimento.
   }
-
-  document.addEventListener("DOMContentLoaded",restoreNAPlaceholders);
 
   // A troca de categoria/quantidade pode reconstruir os campos.
   // Observa somente alterações de estrutura dentro de #fields.
