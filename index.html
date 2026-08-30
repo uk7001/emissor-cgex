@@ -377,6 +377,21 @@ select:active,
 /* SOLICITAÇÃO DE REVOGAÇÃO — remove somente a área de preenchimento "Comprovações". */
 </style>
 
+
+<style id="individuo-multi-selector">
+.individuo-label-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;}
+.individuo-label-row label{margin:0!important;}
+#quantidadeIndividuos{width:30px;min-width:30px;max-width:30px;padding:5px 2px!important;font-size:11px!important;font-weight:800!important;text-align:center;cursor:pointer;}
+.individuo-input-row #individuo{font-variant-numeric:tabular-nums;}
+</style>
+<style id="individuo-discord-prefix-fix">
+.individuo-input-row{display:block;width:100%;}
+.individuo-input-row #individuo{display:block;width:100%;min-width:0;color:#f4f4f4!important;opacity:1!important;-webkit-text-fill-color:#f4f4f4!important;caret-color:#f4f4f4!important;}
+.individuo-example{display:block;width:100%;margin-top:7px;color:rgba(255,255,255,.42);font-size:11px;line-height:1.25;white-space:nowrap;overflow:visible;pointer-events:none;user-select:none;}
+.individuo-input-row #individuo::placeholder{color:#f4f4f4!important;opacity:1!important;-webkit-text-fill-color:#f4f4f4!important;}
+@media(max-width:850px){.individuo-input-row{display:block}.individuo-example{display:block;margin-top:6px;font-size:10px;white-space:nowrap;}}
+</style>
+
 <style id="desktop-layout-fix">
 /* DESKTOP SOMENTE — mantém o layout natural dos dois cartões.
    Nenhuma regra abaixo afeta telas de até 850px. */
@@ -563,6 +578,48 @@ header > #time,
   else initUkdevzTimer();
 })();
 </script>
+
+<style id="quantidade-individuos-compact-fix">
+/* Seletor de quantidade: somente uma seta pequena, sem fundo ou borda. */
+#quantidadeIndividuos{
+  width:14px !important;
+  min-width:14px !important;
+  max-width:14px !important;
+  height:14px !important;
+  min-height:14px !important;
+  padding:0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background-color:transparent !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5' fill='none' stroke='%23f4f4f4' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  background-size:12px 12px !important;
+  color:transparent !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  cursor:pointer !important;
+  box-shadow:none !important;
+  outline:none !important;
+}
+#quantidadeIndividuos:hover,
+#quantidadeIndividuos:focus,
+#quantidadeIndividuos:active{
+  background-color:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  outline:none !important;
+}
+.individuo-label-row{
+  align-items:center !important;
+  gap:6px !important;
+}
+</style>
+
 </head>
 <body>
 <div class="wrap">
@@ -589,10 +646,10 @@ header > #time,
   <div class="fields" id="fields">
     <div class="field"><label>Responsável:</label><input id="responsavel" value="@"></div>
     <div class="field"><label>Função:</label><input id="funcao" placeholder="Corregedoria."></div>
-    <div class="field" id="individuoWrap"><label>Indivíduo(s):</label><input id="individuo" placeholder="N/A."></div>
+    <div class="field individuo-field" id="individuoWrap"><div class="individuo-label-row"><label for="individuo">Indivíduo(s):</label><select id="quantidadeIndividuos" aria-label="Quantidade de indivíduos"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div><div class="individuo-input-row"><input id="individuo" value="<@>" placeholder="<@>" autocomplete="off" spellcheck="false" inputmode="numeric" aria-label="IDs Discord dos indivíduos"><span class="individuo-example">ID DISCORD EX: &lt;@881069139303727104&gt;</span></div></div>
     <div class="field" id="solicitanteWrap" style="display:none"><label>Solicitante:</label><input id="solicitante" value="@"></div>
     <div class="field"><label>Nick do Roblox:</label><input id="nick" placeholder=""></div>
-    <div class="field" id="idWrap"><label>ID do Discord:</label><input id="id" placeholder="N/A."></div>
+    <div class="field" id="idWrap"><label>ID do Discord:</label><input id="id" type="text" inputmode="text" placeholder="N/A." autocomplete="off" spellcheck="false"></div>
     <div class="field full"><label>Motivo(s):</label><textarea id="motivo" placeholder=""></textarea></div>
     <div class="field" id="antigaWrap" style="display:none"><label>Antiga Função:</label><input id="antiga" placeholder="Função anterior"></div>
     <div class="field" id="novaWrap" style="display:none"><label>Nova função:</label><input id="nova" placeholder="Nova função"></div>
@@ -729,8 +786,10 @@ const $=id=>document.getElementById(id);
 const val=id=>$(id)?$(id).value.trim():"";
 function now(){
   const d=new Date();
-  const data=new Intl.DateTimeFormat('pt-BR',{dateStyle:'short'}).format(d);
-  const hora=new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-digit',hour12:false}).format(d);
+  /* Horário padrão fixo em UTC-3, independente do fuso do aparelho/navegador. */
+  const timeZone="Etc/GMT+3"; // UTC-3 fixo, independente do fuso do dispositivo
+  const data=new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeZone}).format(d);
+  const hora=new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone}).format(d);
   return `${data} – ${hora}`;
 }
 
@@ -788,80 +847,69 @@ function normalizeFixedAtFields(){
   });
 }
 
-function saveFormAutomatically(){
-  // Nunca persiste um estado em que um campo protegido perdeu o @.
-  // Se o navegador internalizar a exclusão antes do listener de proteção,
-  // o @ é restaurado antes da leitura do valor para o localStorage.
-  normalizeFixedAtFields();
+function autosaveCategoryFieldIds(category){
+  const map={
+    advertencia:["responsavel","funcao","quantidadeIndividuos","individuo","nick","id","motivo","obs"],
+    rebaixamento:["responsavel","funcao","quantidadeIndividuos","individuo","nick","id","motivo","antiga","nova","obs"],
+    exilio:["responsavel","funcao","solicitante","nick","nickDiscord","idDiscord","motivo"],
+    entregar:["atendente","solicitantePatente","autorizacao","nickIndividuo","patenteEntregar","tempoInatividade","comprovJust"],
+    treino:["responsavelTreino","nickInstrutor","nickMilitar","patenteEntregue","comprovJust"],
+    revogacao:["responsavelRevogacao","solicitanteRevogacao","autorizacao","nickRevogar","patentePerdida","motivoRevogacao"],
+    relatorioTickets:["solicitanteTicket","quantidadeTicket"]
+  };
+  return map[category]||[];
+}
 
-  const data = {};
-  getAutosaveFields().forEach((field, index) => {
-    const key = field.id || field.name || `field_${index}`;
+function saveFormAutomatically(){
+  normalizeFixedAtFields();
+  const data={};
+  autosaveCategoryFieldIds(model).forEach(id=>{
+    const field=$(id);
+    if(!field) return;
     if(field.type === "checkbox" || field.type === "radio"){
-      data[key] = {
-        type: field.type,
-        checked: field.checked
-      };
+      data[id]={type:field.type,checked:field.checked};
     }else{
-      data[key] = {
-        type: field.type || "text",
-        value: field.value
-      };
+      data[id]={type:field.type||"text",value:field.value};
     }
   });
-
   try{
-    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(data));
+    localStorage.setItem(AUTO_SAVE_KEY+"_"+model,JSON.stringify(data));
   }catch(e){
-    console.warn("Não foi possível salvar os dados automaticamente.", e);
+    console.warn("Não foi possível salvar os dados automaticamente.",e);
   }
 }
 
 function restoreFormAutomatically(){
-  let data = null;
-
+  let data=null;
   try{
-    data = JSON.parse(localStorage.getItem(AUTO_SAVE_KEY) || "null");
-  }catch(e){
-    data = null;
-  }
-
+    data=JSON.parse(localStorage.getItem(AUTO_SAVE_KEY+"_"+model)||"null");
+  }catch(e){ data=null; }
   if(!data) return;
-
-  getAutosaveFields().forEach((field, index) => {
-    const key = field.id || field.name || `field_${index}`;
-    const saved = data[key];
-    if(!saved) return;
-
-    if(field.type === "checkbox" || field.type === "radio"){
-      field.checked = !!saved.checked;
-    }else if(saved.value !== undefined){
-      field.value = saved.value;
-    }
+  autosaveCategoryFieldIds(model).forEach(id=>{
+    const field=$(id), saved=data[id];
+    if(!field || !saved) return;
+    if(field.type === "checkbox" || field.type === "radio") field.checked=!!saved.checked;
+    else if(saved.value !== undefined) field.value=saved.value;
   });
-
-  // Corrige imediatamente qualquer estado antigo do autosave que tenha
-  // sido salvo sem o @ antes desta proteção existir.
   normalizeFixedAtFields();
-
-  // Rebuild any generated preview/content using the restored values.
   if(typeof build === "function"){
-    try{ build(); }catch(e){}
+    try{build();}catch(e){}
   }
 }
 
 function clearAutosavedForm(){
   try{
-    localStorage.removeItem(AUTO_SAVE_KEY);
+    Object.keys(localStorage).forEach(key=>{
+      if(key===AUTO_SAVE_KEY || key.startsWith(AUTO_SAVE_KEY+"_")) localStorage.removeItem(key);
+    });
   }catch(e){}
 }
 
 function initAutosave(){
-  getAutosaveFields().forEach(field => {
-    field.addEventListener("input", saveFormAutomatically);
-    field.addEventListener("change", saveFormAutomatically);
+  getAutosaveFields().forEach(field=>{
+    field.addEventListener("input",saveFormAutomatically);
+    field.addEventListener("change",saveFormAutomatically);
   });
-
   restoreFormAutomatically();
 }
 
@@ -1014,6 +1062,7 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   try{ localStorage.setItem("relatorioActiveModel", model); }catch(e){}
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");
   loadCategoryFields();
+  if(typeof window.__syncResponsavelPrincipal === "function") window.__syncResponsavelPrincipal();
   updateComprovacoesField();
   const rebaix=model==="rebaixamento", exilio=model==="exilio", novo=["entregar","treino","revogacao","relatorioTickets"].includes(model);
   document.body.classList.toggle("newmodel-active",novo);
@@ -1097,36 +1146,18 @@ singleAtFields.forEach(id=>{
   });
 })();
 
-const responsibleIds=["responsavel","atendente","responsavelTreino","responsavelRevogacao"];
-responsibleIds.forEach(id=>{
-  const field=$(id);
-  if(!field) return;
-  field.addEventListener("input",()=>{
-    const value=field.value;
-    responsibleIds.forEach(otherId=>{
-      const other=$(otherId);
-      if(other && other!==field) other.value=value;
-    });
-    build();
-  });
-});
-// Todos os campos de preenchimento são isolados por categoria/modelo.
-// EXCEÇÃO: Responsável, Atendente, Função e Solicitante permanecem compartilhados.
-const sharedFieldIds=new Set([
-  "responsavel","atendente","responsavelTreino","responsavelRevogacao",
-  "funcao","solicitante","solicitantePatente","solicitanteRevogacao","solicitanteTicket"
-]);
+// TODOS os campos são isolados por categoria/modelo.
+// Não existe mais campo compartilhado: cada categoria possui seu próprio
+// estado, inclusive Responsável, Função e Solicitante.
+const sharedFieldIds=new Set();
 
-// Cada modelo possui SOMENTE os seus próprios campos.
-// Isso evita que campos ocultos de outro modelo sejam salvos, carregados
-// ou apagados por engano.
 const categoryFields={
-  advertencia:["individuo","nick","id","motivo","obs"],
-  rebaixamento:["individuo","nick","id","motivo","antiga","nova","obs"],
-  exilio:["nick","nickDiscord","idDiscord","motivo"],
-  entregar:["autorizacao","nickIndividuo","patenteEntregar","tempoInatividade","comprovJust"],
-  treino:["nickInstrutor","nickMilitar","patenteEntregue","comprovJust"],
-  revogacao:["autorizacao","nickRevogar","patentePerdida","motivoRevogacao"],
+  advertencia:["responsavel","funcao","quantidadeIndividuos","individuo","nick","id","motivo","obs"],
+  rebaixamento:["responsavel","funcao","quantidadeIndividuos","individuo","nick","id","motivo","antiga","nova","obs"],
+  exilio:["responsavel","funcao","solicitante","nick","nickDiscord","idDiscord","motivo"],
+  entregar:["atendente","solicitantePatente","autorizacao","nickIndividuo","patenteEntregar","tempoInatividade","comprovJust"],
+  treino:["responsavelTreino","nickInstrutor","nickMilitar","patenteEntregue","comprovJust"],
+  revogacao:["responsavelRevogacao","solicitanteRevogacao","autorizacao","nickRevogar","patentePerdida","motivoRevogacao"],
   relatorioTickets:["solicitanteTicket","quantidadeTicket"]
 };
 
@@ -1155,7 +1186,19 @@ function saveCategoryFields(){
 
 function loadCategoryFields(){
   const ids=getCategoryFieldIds();
-  const state=categoryFieldState[model]||{};
+  let state=categoryFieldState[model]||{};
+  if(!Object.keys(state).length){
+    try{
+      const saved=JSON.parse(localStorage.getItem(AUTO_SAVE_KEY+"_"+model)||"null");
+      if(saved){
+        state={};
+        Object.keys(saved).forEach(id=>{
+          if(saved[id] && saved[id].value!==undefined) state[id]=saved[id].value;
+        });
+        categoryFieldState[model]=state;
+      }
+    }catch(e){}
+  }
   ids.forEach(id=>{
     const el=$(id);
     if(!el) return;
@@ -1163,16 +1206,24 @@ function loadCategoryFields(){
     if(Object.prototype.hasOwnProperty.call(state,id)){
       // Quando já existe estado específico da categoria, ele tem prioridade.
       el.value=state[id];
-    }else if(id==="solicitanteTicket"){
-      // O @ é o valor inicial fixo do solicitante de tickets.
-      if(!String(el.value||"").startsWith("@")) el.value="@"+String(el.value||"");
+    }else if(["responsavel","atendente","responsavelTreino","responsavelRevogacao","funcao","solicitante","solicitantePatente","solicitanteRevogacao","solicitanteTicket"].includes(id)){
+      // Cada categoria começa com seu próprio valor inicial; nunca herda
+      // o conteúdo digitado na categoria anterior.
+      el.value=(id==="funcao") ? "" : "@";
     }else{
-      // Não apague valores restaurados pelo autosave ao trocar/recarregar a página.
-      // Isso é especialmente importante para o contador de tickets.
-      el.value=el.value||"";
+      el.value="";
     }
 
     if(id==="solicitanteTicket" && !String(el.value||"").startsWith("@")) el.value="@"+el.value;
+    if(id==="individuo"){
+      const quantidade=Math.min(4,Math.max(1,parseInt($("quantidadeIndividuos")?.value||"1",10)||1));
+      const ids=[];
+      const re=/<@(\d*)>/g;
+      let match;
+      while((match=re.exec(String(el.value||"")))!==null) ids.push(match[1]||"");
+      while(ids.length<quantidade) ids.push("");
+      el.value=ids.slice(0,quantidade).map(x=>"<@"+String(x||"").replace(/\D/g,"")+">").join(" ");
+    }
   });
 }
 
@@ -1224,55 +1275,59 @@ camposArrobaFixos.forEach(id=>protegerArroba($(id)));
 // - depois de cada novo @, a mesma regra volta a valer para o próximo.
 // Ex.: @abcd@efgh@ permite os dois primeiros @, mas o terceiro só será
 // permitido depois que houver mais de 3 caracteres após o segundo @.
-(function limitarArrobaIndividuo(){
-  const field=$("individuo");
-  if(!field) return;
 
-  function sanitize(value, cursor){
-    let result="";
-    let charsSinceAt=0;
-    let atCount=0;
-    let removedBeforeCursor=0;
-
-    for(let i=0;i<value.length;i++){
-      const ch=value[i];
-      const beforeCursor=i < cursor;
-
-      if(ch==="@"){
-        const allowed = atCount===0 || charsSinceAt>3;
-        if(allowed){
-          result += ch;
-          atCount++;
-          charsSinceAt=0;
-        }else if(beforeCursor){
-          removedBeforeCursor++;
-        }
-      }else{
-        result += ch;
-        charsSinceAt++;
-      }
-    }
-
-    return {result, removedBeforeCursor};
-  }
-
-  field.addEventListener("input",()=>{
-    const value=String(field.value||"");
-    const oldPos=field.selectionStart ?? value.length;
-    const cleaned=sanitize(value,oldPos);
-
-    if(cleaned.result!==value){
-      field.value=cleaned.result;
-      const nextPos=Math.max(0,oldPos-cleaned.removedBeforeCursor);
-      try{ field.setSelectionRange(nextPos,nextPos); }catch(_){}
-    }
-    build();
-  }, true);
-})();
 
 
 // Atualização contínua da pré-visualização: qualquer alteração em um campo
 // deve reconstruir o conteúdo imediatamente, sem depender do Enter.
+/*
+ * RESPONSÁVEL COMPARTILHADO — somente de origem no campo "Responsável".
+ * O que for digitado em #responsavel é refletido nas categorias que exibem
+ * "Responsável:" e também no campo "Atendente:" da categoria correspondente.
+ * A sincronização é somente de ida: alterar Atendente/Responsável específico
+ * não altera o campo principal.
+ */
+(function syncResponsavelAcrossCategories(){
+  const sourceId="responsavel";
+  const targetIds=["atendente","responsavelTreino","responsavelRevogacao"];
+  const KEY="relatorioResponsavelPrincipal";
+
+  function getMaster(){
+    try{
+      const saved=localStorage.getItem(KEY);
+      if(saved!==null) return saved;
+    }catch(_){}
+    return String($(sourceId)?.value || "@");
+  }
+
+  function sync(value, save=true){
+    const v=String(value ?? "");
+    const source=$(sourceId);
+    if(source && source.value!==v) source.value=v;
+    if(save){ try{ localStorage.setItem(KEY,v); }catch(_){} }
+
+    targetIds.forEach(id=>{
+      const target=$(id);
+      if(!target) return;
+      target.value=v;
+    });
+    if(typeof build === "function") build();
+  }
+
+  /* Expõe a sincronização para a troca de categoria, sem permitir o caminho inverso. */
+  window.__syncResponsavelPrincipal=()=>sync(getMaster(),false);
+
+  const source=$(sourceId);
+  if(!source) return;
+
+  /* Somente este campo é a origem da informação compartilhada. */
+  source.addEventListener("input",()=>sync(source.value,true),true);
+  source.addEventListener("change",()=>sync(source.value,true),true);
+
+  /* Recupera o Responsável principal e replica para as categorias permitidas. */
+  sync(getMaster(),false);
+})();
+
 document.addEventListener("input", e=>{
   const el=e.target;
   if(el && el.matches("#fields input, #fields textarea, #fields select")){
@@ -1401,6 +1456,7 @@ document.addEventListener("input", e=>{
   }
 
   function placeCaret(){
+    if(window.__limparEmExecucao) return;
     if(!desktop() || !activeField) return;
 
     const preview=document.getElementById("preview");
@@ -1529,10 +1585,18 @@ document.addEventListener("input", e=>{
   }, true);
 
   btn.addEventListener("click", function(){
-    requestAnimationFrame(function(){
-      window.scrollTo(savedScrollX, savedScrollY);
-      // O foco permanece onde o usuário deixou, sem focar a pré-visualização.
-    });
+    // Limpar não deve levar o usuário para a área de preenchimento.
+    // Restaura a posição original depois que todas as rotinas do botão terminarem.
+    const restoreView = () => {
+      window.scrollTo({left:savedScrollX, top:savedScrollY, behavior:"instant"});
+    };
+    restoreView();
+    requestAnimationFrame(restoreView);
+    setTimeout(restoreView, 0);
+    setTimeout(restoreView, 50);
+    setTimeout(restoreView, 150);
+    setTimeout(restoreView, 350);
+    setTimeout(restoreView, 700);
   }, false);
 })();
 </script>
@@ -1743,36 +1807,24 @@ document.addEventListener("input", e=>{
 })();
 </script>
 
-<script id="numeric-id-fields-fix">
+<script id="text-id-field-fix">
 (function(){
-  const numericIds = ["id", "idDiscord"];
-  function enforceNumeric(field){
-    if(!field) return;
-    field.setAttribute("inputmode","numeric");
-    field.setAttribute("pattern","[0-9]*");
-    field.addEventListener("input", function(){
-      const old = this.value;
-      const pos = this.selectionStart ?? old.length;
-      const before = old.slice(0,pos);
-      const cleaned = old.replace(/[^0-9]/g, "");
-      const removedBefore = (before.match(/[^0-9]/g)||[]).length;
-      if(cleaned !== old){
-        this.value = cleaned;
-        const newPos = Math.max(0, pos - removedBefore);
-        try{ this.setSelectionRange(newPos,newPos); }catch(e){}
-      }
-      if(typeof build === "function") build();
-    }, true);
-    field.addEventListener("paste", function(){
-      setTimeout(()=>{
-        this.value = String(this.value||"").replace(/[^0-9]/g,"");
-        if(typeof build === "function") build();
-      },0);
-    }, true);
-  }
-  numericIds.forEach(id=>enforceNumeric(document.getElementById(id)));
+  // O campo "ID" aceita letras, números, símbolos e espaços.
+  // A pré-visualização usa o mesmo valor sem conversão ou filtragem numérica.
+  const field = document.getElementById("id");
+  if(!field) return;
+  field.setAttribute("type","text");
+  field.setAttribute("inputmode","text");
+  field.removeAttribute("pattern");
+  field.addEventListener("input", function(){
+    if(typeof build === "function") build();
+  }, true);
 })();
 </script>
+<script id="individuo-discord-prefix-fix-script">
+/* Desativado: a rotina multi-final abaixo controla os tokens <@ID>. */
+</script>
+
 <script id="copy-clear-fix">
 (function(){
   const copyBtn=document.getElementById("copy");
@@ -1862,16 +1914,34 @@ document.addEventListener("input", e=>{
     clearBtn.addEventListener("click",function(e){
       e.preventDefault();
       e.stopPropagation();
+      // Impede qualquer rotina de foco/caret de levar o usuário para Observações
+      // (ou outro campo) durante e imediatamente após o comando Limpar.
+      window.__limparEmExecucao = true;
+      if(document.activeElement && typeof document.activeElement.blur === "function") document.activeElement.blur();
       const ids=(typeof getCategoryFieldIds === "function") ? getCategoryFieldIds() : [];
+      const protectedClearIds=new Set([
+        // Responsável/Atendente são preservados pelo botão "Limpar" em todas as categorias.
+        "responsavel","atendente","responsavelTreino","responsavelRevogacao"
+      ]);
       ids.forEach(id=>{
-        // A quantidade de tickets é um contador persistente e não é apagada pelo Limpar.
-        if(id === "quantidadeTicket") return;
+        // A quantidade de tickets e os campos de Responsável/Atendente não são apagados pelo Limpar.
+        if(id === "quantidadeTicket" || protectedClearIds.has(id)) return;
         const el=document.getElementById(id);
         if(el) el.value="";
       });
-      // Função também faz parte do preenchimento e deve ser apagada pelo botão Limpar.
-      const funcaoEl=document.getElementById("funcao");
-      if(funcaoEl) funcaoEl.value="";
+
+      const currentIds=(typeof getCategoryFieldIds === "function") ? getCategoryFieldIds() : [];
+      if(currentIds.includes("individuo")){
+        const individuoEl=document.getElementById("individuo");
+        if(individuoEl){
+          individuoEl.value="<@>";
+          individuoEl.setSelectionRange(2,2);
+        }
+      }
+      if(currentIds.includes("funcao")){
+        const funcaoEl=document.getElementById("funcao");
+        if(funcaoEl) funcaoEl.value="";
+      }
       if(typeof categorySolicitanteId !== "undefined" && typeof model !== "undefined"){
         const sid=categorySolicitanteId[model];
         if(sid){ const el=document.getElementById(sid); if(el) el.value="@"; }
@@ -1880,12 +1950,30 @@ document.addEventListener("input", e=>{
         const currentCounter=document.getElementById("quantidadeTicket");
         const savedState=categoryFieldState[model]||{};
         categoryFieldState[model]={};
+
+        // Mantém Responsável/Atendente no estado da categoria mesmo após "Limpar".
+        ["responsavel","atendente","responsavelTreino","responsavelRevogacao"].forEach(id=>{
+          if(Object.prototype.hasOwnProperty.call(savedState,id)){
+            categoryFieldState[model][id]=savedState[id];
+          }else{
+            const el=document.getElementById(id);
+            if(el && ["responsavel","atendente","responsavelTreino","responsavelRevogacao"].includes(id)){
+              categoryFieldState[model][id]=el.value;
+            }
+          }
+        });
+
         if(model === "relatorioTickets" && currentCounter) categoryFieldState[model].quantidadeTicket=currentCounter.value;
       }
       if(typeof build === "function") build();
       if(typeof saveFormAutomatically === "function") saveFormAutomatically();
       preview?.classList.add("clearing-preview");
       setTimeout(()=>preview?.classList.remove("clearing-preview"),450);
+      // Mantém o formulário fora de qualquer campo após o Limpar.
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        window.__limparEmExecucao = false;
+        if(document.activeElement && typeof document.activeElement.blur === "function") document.activeElement.blur();
+      }));
     });
   }
 })();
@@ -1968,6 +2056,208 @@ document.addEventListener("input", e=>{
 
 
 
+
+
+
+<script id="individuo-mobile-fix">
+/* Desativado: o controle multi-final abaixo gerencia todos os tokens <@ID>
+   e preserva os múltiplos indivíduos ao receber foco/clique. */
+</script>
+
+
+
+
+<script id="individuo-multi-final">
+(function(){
+  const MAX=4, PREFIX="<@", SUFFIX=">", GAP=" ";
+  const getField=()=>document.getElementById("individuo");
+  const getQty=()=>document.getElementById("quantidadeIndividuos");
+  const count=()=>Math.min(MAX,Math.max(1,parseInt(getQty()?.value||"1",10)||1));
+
+  function idsFromValue(v){
+    const ids=[]; const re=/<@(\d*)>/g; let m;
+    while((m=re.exec(String(v||"")))!==null) ids.push(m[1]||"");
+    return ids.slice(0,MAX);
+  }
+
+  function format(ids){
+    const out=(ids||[]).slice(0,MAX);
+    while(out.length<count()) out.push("");
+    return out.slice(0,count()).map(id=>PREFIX+String(id||"").replace(/\D/g,"")+SUFFIX).join(GAP);
+  }
+
+  function ranges(v){
+    const a=[]; const re=/<@(\d*)>/g; let m;
+    while((m=re.exec(String(v||"")))!==null){
+      a.push({
+        start:m.index,
+        end:re.lastIndex,
+        digitStart:m.index+2,
+        digitEnd:re.lastIndex-1,
+        id:m[1]||""
+      });
+    }
+    return a;
+  }
+
+  function clampCaret(el, preferred){
+    const v=el.value||format([]), rs=ranges(v);
+    if(!rs.length){ el.value=format([]); return 2; }
+    let p=Math.max(0,Math.min(v.length,preferred));
+    // Nunca deixe o cursor nos caracteres protegidos ou no espaço entre tokens.
+    for(let i=0;i<rs.length;i++){
+      const r=rs[i];
+      if(p>=r.digitStart && p<=r.digitEnd) return p;
+      if(p<r.digitStart) return r.digitStart;
+      if(i<rs.length-1 && p>=r.end && p<rs[i+1].start) return rs[i+1].digitStart;
+    }
+    return rs[rs.length-1].digitEnd;
+  }
+
+  function write(ids, caret){
+    const el=getField(); if(!el) return;
+    el.value=format(ids);
+    const p=clampCaret(el,caret==null?el.value.length:caret);
+    try{el.setSelectionRange(p,p);}catch(_){ }
+    if(typeof window.build==="function") window.build();
+  }
+
+  function tokenAt(v,pos){
+    const rs=ranges(v);
+    for(let i=0;i<rs.length;i++){
+      const r=rs[i];
+      if(pos>=r.digitStart && pos<=r.digitEnd) return i;
+      if(pos<r.digitStart) return i;
+    }
+    return rs.length-1;
+  }
+
+  function insertDigits(text){
+    const el=getField(); if(!el) return;
+    const digits=String(text||"").replace(/\D/g,""); if(!digits) return;
+    const v=el.value||format([]), rs=ranges(v), pos=el.selectionStart??2, end=el.selectionEnd??pos;
+    const i=Math.max(0,Math.min(count()-1,tokenAt(v,pos)));
+    const r=rs[i] || {digitStart:2,digitEnd:2};
+    let ids=idsFromValue(v); while(ids.length<count()) ids.push("");
+    let local=Math.max(0,Math.min(ids[i].length,pos-r.digitStart));
+    if(end!==pos){
+      const same=tokenAt(v,Math.max(0,end-1))===i;
+      if(same){
+        const a=Math.max(0,pos-r.digitStart), b=Math.max(a,end-r.digitStart);
+        ids[i]=ids[i].slice(0,a)+ids[i].slice(b); local=a;
+      }
+    }
+    ids[i]=ids[i].slice(0,local)+digits+ids[i].slice(local);
+    const nr=ranges(format(ids))[i];
+    write(ids,(nr?.digitStart||2)+local+digits.length);
+  }
+
+  function removeOne(backspace){
+    const el=getField(); if(!el) return;
+    const v=el.value||format([]), rs=ranges(v), pos=el.selectionStart??2, end=el.selectionEnd??pos;
+    if(!rs.length) return;
+    const i=Math.max(0,Math.min(count()-1,tokenAt(v,Math.max(0,pos-(backspace?1:0)))));
+    const r=rs[i]; let ids=idsFromValue(v); while(ids.length<count()) ids.push("");
+
+    // Seleção só pode apagar números do mesmo token; nunca atravessa <@>, > ou o espaço.
+    if(end!==pos){
+      if(tokenAt(v,Math.max(0,end-1))!==i) {
+        try{el.setSelectionRange(clampCaret(el,pos),clampCaret(el,pos));}catch(_){ }
+        return;
+      }
+      const a=Math.max(0,pos-r.digitStart), b=Math.max(a,end-r.digitStart);
+      ids[i]=ids[i].slice(0,a)+ids[i].slice(b);
+      write(ids,r.digitStart+a); return;
+    }
+
+    const local=pos-r.digitStart;
+    if(backspace){
+      // No início do token: NÃO atravessa para o indivíduo anterior.
+      if(local<=0) { try{el.setSelectionRange(r.digitStart,r.digitStart);}catch(_){ } return; }
+      ids[i]=ids[i].slice(0,local-1)+ids[i].slice(local);
+      write(ids,r.digitStart+local-1);
+    }else{
+      // No final do token: NÃO atravessa para o próximo indivíduo.
+      if(local<0 || local>=ids[i].length) { try{el.setSelectionRange(r.digitEnd,r.digitEnd);}catch(_){ } return; }
+      ids[i]=ids[i].slice(0,local)+ids[i].slice(local+1);
+      write(ids,r.digitStart+local);
+    }
+  }
+
+  function normalize(){
+    const el=getField(); if(!el) return;
+    const old=el.value||"", pos=el.selectionStart??old.length, rs=ranges(old);
+    let i=tokenAt(old,pos), local=0;
+    if(rs[i]) local=Math.max(0,Math.min(rs[i].id.length,pos-rs[i].digitStart));
+    const ids=idsFromValue(old);
+    while(ids.length<count()) ids.push("");
+    const formatted=format(ids), nr=ranges(formatted)[Math.min(i,count()-1)];
+    el.value=formatted;
+    try{el.setSelectionRange(nr?.digitStart+Math.min(local,(nr?.id||"").length) || 2,nr?.digitStart+Math.min(local,(nr?.id||"").length) || 2);}catch(_){ }
+    if(typeof window.build==="function") window.build();
+  }
+
+  function syncQuantity(){
+    const el=getField(); if(!el) return;
+    const ids=idsFromValue(el.value); const old=el.selectionStart??2;
+    el.value=format(ids);
+    const rs=ranges(el.value), r=rs[Math.min(rs.length-1,Math.max(0,tokenAt(el.value,old)))];
+    const p=r?.digitStart||2;
+    try{el.setSelectionRange(p,p);}catch(_){ }
+    if(typeof window.build==="function") window.build();
+  }
+
+  const q=getQty();
+  if(q) q.addEventListener("change",syncQuantity,true);
+
+  document.addEventListener("keydown",function(e){
+    const el=getField(); if(!el || e.target!==el) return;
+    if(e.ctrlKey||e.metaKey||e.altKey) return;
+    if(/^\d$/.test(e.key)){e.preventDefault();e.stopImmediatePropagation();insertDigits(e.key);return;}
+    if(e.key==="Backspace"||e.key==="Delete"){e.preventDefault();e.stopImmediatePropagation();removeOne(e.key==="Backspace");return;}
+    if(e.key==="ArrowLeft"||e.key==="ArrowRight"){
+      const v=el.value||format([]), rs=ranges(v), pos=el.selectionStart??2, i=tokenAt(v,pos), r=rs[i];
+      if(e.key==="ArrowLeft" && r && pos<=r.digitStart){
+        e.preventDefault();e.stopImmediatePropagation();
+        try{el.setSelectionRange(r.digitStart,r.digitStart);}catch(_){ }
+      }else if(e.key==="ArrowRight" && r && pos>=r.digitEnd){
+        e.preventDefault();e.stopImmediatePropagation();
+        try{el.setSelectionRange(r.digitEnd,r.digitEnd);}catch(_){ }
+      }
+      return;
+    }
+    if(e.key.length===1){e.preventDefault();e.stopImmediatePropagation();}
+  },true);
+
+  document.addEventListener("beforeinput",function(e){
+    const el=getField(); if(!el || e.target!==el) return;
+    if((e.inputType||"").startsWith("insert") && e.data){e.preventDefault();e.stopImmediatePropagation();insertDigits(e.data);}
+    else if((e.inputType||"").includes("delete")){e.preventDefault();e.stopImmediatePropagation();removeOne((e.inputType||"").includes("Backward"));}
+  },true);
+
+  document.addEventListener("paste",function(e){
+    const el=getField(); if(!el || e.target!==el) return;
+    e.preventDefault();e.stopImmediatePropagation();insertDigits(e.clipboardData?.getData("text")||"");
+  },true);
+
+  document.addEventListener("input",function(e){
+    const el=getField(); if(!el || e.target!==el) return;
+    e.stopImmediatePropagation(); normalize();
+  },true);
+
+  document.addEventListener("click",function(e){
+    const el=getField(); if(!el || e.target!==el) return;
+    e.stopImmediatePropagation();
+    requestAnimationFrame(()=>{
+      const p=clampCaret(el,el.selectionStart??2);
+      try{el.setSelectionRange(p,p);}catch(_){ }
+    });
+  },true);
+
+  // Garante o formato inicial com espaço entre os indivíduos.
+  requestAnimationFrame(()=>{const el=getField(); if(el){el.value=format(idsFromValue(el.value||"<@>"));}});
+})();
+</script>
 </body>
 </html>
 <script id="persist-page-position">
