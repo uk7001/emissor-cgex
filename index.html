@@ -945,6 +945,11 @@ if(document.readyState === "loading"){
   initAutosave();
 }
 
+function inlineValue(id, fallback="") {
+  const value=val(id);
+  return value ? "`"+value+"`" : fallback;
+}
+
 function build(){
   const r=val("responsavel")||"@", f=val("funcao")||"Corregedoria.",
   i=(function(){
@@ -960,8 +965,8 @@ function build(){
 • | Função: ${f}
 ♤ ————————————— ♤
 • | Indivíduo: ${i}
-• | Nick do Roblox: \`${n}\`
-• | ID: ${id}
+• | Nick do Roblox: ${inlineValue("nick")}
+• | ID: ${inlineValue("id", "N/A.")}
 
 • | Motivo(s): ${m}
 • | Observações: ${o}
@@ -975,8 +980,8 @@ function build(){
 • | Função: ${f}
 ♤ ——————————————— ♤
 • | Indivíduo: ${i}
-• | Nick do Roblox: \`${n}\`
-• | ID: ${id==="N/A." || !id ? "N/A." : "`"+id+"`"}
+• | Nick do Roblox: ${inlineValue("nick")}
+• | ID: ${inlineValue("id", "N/A.")}
 
 • | Motivo(s): ${m}
 • | Antiga Função: ${val("antiga")}
@@ -994,9 +999,9 @@ function build(){
 ———————————————
 • | Solicitante: ${val("solicitante")||"@"}
 ———————————————
-• | Nick Roblox: ${n}
+• | Nick Roblox: ${inlineValue("nick")}
 • | Nick Discord: ${val("nickDiscord")||"N/A."}
-• | Id Discord: ${val("idDiscord")||"N/A."}
+• | Id Discord: ${inlineValue("idDiscord", "N/A.")}
 • | Motivo: ${m}
 ———————————————
 • | Data-Hora: ${d}
@@ -1010,7 +1015,7 @@ function build(){
 
 <:membro:1479904052375457822>・Autorização: ${val("autorizacao")||"N/A."}
 
-🧾・Nick do indivíduo: ${val("nickIndividuo")}
+🧾・Nick do indivíduo: ${inlineValue("nickIndividuo")}
 
 🧾・Patente a entregar: ${val("patenteEntregar")}
 
@@ -1022,9 +1027,9 @@ function build(){
 
 👤 Responsável: ${val("responsavelTreino")||"@"}
 
-🧾・Nick do instrutor: ${val("nickInstrutor")}
+🧾・Nick do instrutor: ${inlineValue("nickInstrutor")}
 
-🧾・Nick do militar aprovado: ${val("nickMilitar")}
+🧾・Nick do militar aprovado: ${inlineValue("nickMilitar")}
 
 🧾・Patente entregue: ${val("patenteEntregue")}
 
@@ -1042,7 +1047,7 @@ function build(){
 
 <:membro:1479904052375457822> ・Autorização: ${val("autorizacao")||"N/A."}
 
-🧾・Nick do indivíduo a ser revogado: ${val("nickRevogar")}
+🧾・Nick do indivíduo a ser revogado: ${inlineValue("nickRevogar")}
 
 🧾・Patente perdida: ${val("patentePerdida")}
 
