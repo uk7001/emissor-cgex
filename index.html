@@ -631,6 +631,43 @@ header > #time,
 }
 </style>
 
+
+<style id="disable-keyboard-correction">
+/* Desativa correção automática, capitalização e verificação ortográfica nos campos do site. */
+input,
+textarea,
+[contenteditable="true"]{
+  -webkit-text-size-adjust: none;
+}
+</style>
+<script id="disable-keyboard-correction-script">
+(function(){
+  function disableKeyboardCorrection(){
+    document.querySelectorAll('input, textarea, [contenteditable="true"]').forEach(function(el){
+      el.setAttribute('autocomplete','off');
+      el.setAttribute('autocorrect','off');
+      el.setAttribute('spellcheck','false');
+      el.setAttribute('autocapitalize','none');
+      el.setAttribute('data-gramm','false');
+      el.setAttribute('data-gramm_editor','false');
+      el.setAttribute('data-enable-grammarly','false');
+    });
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', disableKeyboardCorrection);
+  }else{
+    disableKeyboardCorrection();
+  }
+
+  // Garante a configuração também para campos criados/trocados dinamicamente.
+  new MutationObserver(disableKeyboardCorrection).observe(document.documentElement,{
+    childList:true,
+    subtree:true
+  });
+})();
+</script>
+
 </head>
 <body>
 <div class="wrap">
@@ -1000,7 +1037,7 @@ function build(){
 • | Solicitante: ${val("solicitante")||"@"}
 ———————————————
 • | Nick Roblox: ${inlineValue("nick")}
-• | Nick Discord: ${val("nickDiscord")||"N/A."}
+• | Nick Discord: ${inlineValue("nickDiscord", "N/A.")}
 • | Id Discord: ${inlineValue("idDiscord", "N/A.")}
 • | Motivo: ${m}
 ———————————————
